@@ -241,6 +241,7 @@ mod tests {
         let path = dir.path().join("raw.jsonl");
         let mut sink = JsonlSink::create(&path).unwrap();
         sink.write(&RawRecord {
+            subsource: None,
             text: "hello".into(),
             source: Some("hplt".into()),
         })

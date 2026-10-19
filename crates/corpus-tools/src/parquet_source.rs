@@ -24,6 +24,34 @@ pub fn iter_text_column(path: &Path, column: &str) -> Result<impl Iterator<Item 
     }))
 }
 
+/// Iterate `(text, label)` pairs from two string columns of one parquet file.
+pub fn iter_text_with_label(
+    path: &Path,
+    text_column: &str,
+    label_column: &str,
+) -> Result<impl Iterator<Item = Result<(String, String)>>> {
+    let text_column = text_column.to_string();
+    let label_column = label_column.to_string();
+    let file = File::open(path).with_context(|| format!("opening parquet file {}", path.display()))?;
+    let reader = ParquetRecordBatchReaderBuilder::try_new(file)?
+        .build()
+        .context("building parquet reader")?;
+
+    Ok(reader.flat_map(move |batch| {
+        let batch = match batch {
+            Ok(batch) => batch,
+            Err(error) => return vec![Err(error.into())],
+        };
+        let texts = extract_string_column(&batch, &text_column);
+        let labels = extract_string_column(&batch, &label_column);
+        texts
+            .into_iter()
+            .zip(labels)
+            .map(|(text, label)| Ok((text?, label?)))
+            .collect()
+    }))
+}
+
 pub fn iter_struct_field(
     path: &Path,
     column: &str,

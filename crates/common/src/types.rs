@@ -48,6 +48,21 @@ pub enum License {
     Other(String),
 }
 
+impl License {
+    /// Resolve an SPDX-style identifier; anything unrecognized is kept verbatim.
+    pub fn from_id(id: &str) -> License {
+        match id {
+            "CC0-1.0" => License::Cc0_1_0,
+            "CC-BY-4.0" => License::CcBy4_0,
+            "CC-BY-SA-4.0" => License::CcBySa4_0,
+            "MIT" => License::Mit,
+            "Apache-2.0" => License::Apache2_0,
+            "public-domain" => License::PublicDomain,
+            other => License::Other(other.to_string()),
+        }
+    }
+}
+
 // ── Raw stage (download + merge today) ───────────────────────────────────────
 
 /// Minimal record produced by downloaders and merge today.
@@ -58,6 +73,9 @@ pub struct RawRecord {
     pub text: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source: Option<String>,
+    /// Original dataset inside an aggregate source (e.g. Glot500's `dataset` column).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub subsource: Option<String>,
 }
 
 /// Backward-compatible alias for [`RawRecord`].

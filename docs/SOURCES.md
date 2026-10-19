@@ -28,7 +28,6 @@ See also: [METADATA_SCHEMA.md](METADATA_SCHEMA.md), [PLAN.md](../PLAN.md).
 | `finepdfs` | FinePDFs Somali (`som_Latn`) | PDF documents | A | 21,781 docs (HF train) | ODC-BY | `download_finepdfs_so` | done | HF `HuggingFaceFW/finepdfs` parquet export; long documents |
 | `fineweb-2` | FineWeb-2 Somali (`som_Latn`) | web crawl | A | 1,070,384 docs (HF train) | ODC-BY | `download_fineweb2_so` | done | HF `HuggingFaceFW/fineweb-2` parquet export; heavy overlap with HPLT/mC4 |
 | `somali-dataset` | Somali Alpaca instructions | instruction data | A | 44,839 rows (HF train) | MIT | `download_somali_dataset_so` | done | HF `burtugeey/Somali_dataset`; instruction, input, and output joined per row |
-| `somali-tinystories` | Somali TinyStories | synthetic stories | A | 42,000 rows (HF train) | unspecified | `download_somali_tinystories_so` | done | HF `Zyroxx66/somali-tinystories`; no license on dataset card; 20,900 stories duplicated upstream |
 | `tanzil` | Tanzil Qur'an Somali (Abduh) | religious | A | 6,236 ayahs | see source | `download_quran_tanzil` | done | Separate translation from QuranEnc; no footnotes upstream |
 
 ### Track A licensing note
@@ -59,7 +58,6 @@ notes: [reports/runs/MEASUREMENT.md](../reports/runs/MEASUREMENT.md).
 | `somali-web-corpus` | 217,528 | 217,390 | 121,764 | 4,890,563 | 6,111,014 |
 | `mt560` | 161,865 | 51,083 | 49,195 | 1,162,745 | 1,423,242 |
 | `somali-dataset` | 44,839 | 44,793 | 37,512 | 5,781,223 | 7,974,652 |
-| `somali-tinystories` | 42,000 | 21,100 | 21,100 | 2,396,895 | 3,074,429 |
 | `finepdfs` | 21,781 | 21,780 | 20,771 | 18,625,820 | 27,654,658 |
 | `opus` | 14,879 | 12,296 | 12,126 | 381,716 | 517,056 |
 | `quran` | 7,373 | 7,277 | 7,072 | 160,068 | 240,053 |
@@ -209,14 +207,6 @@ Raw, merge, and final counts come from `reports/01_merge_stats.json` and
 - **Output:** `data/raw/somali-dataset/somali-dataset_so.jsonl`
 - **License:** MIT (dataset card)
 
-### `somali-tinystories`
-
-- **Upstream:** [Zyroxx66/somali-tinystories](https://huggingface.co/datasets/Zyroxx66/somali-tinystories) config `default`
-- **Access:** Hugging Face parquet export (`refs/convert/parquet`); train split, `story` column
-- **Output:** `data/raw/somali-tinystories/somali-tinystories_so.jsonl`
-- **License:** not stated on the dataset card; recorded as `Other`. Confirm with the owner
-  before redistribution
-- **Data note:** 20,900 of the 42,000 upstream stories appear twice verbatim; merge keeps one copy
 
 ### `nllb`
 

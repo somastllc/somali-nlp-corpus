@@ -63,10 +63,6 @@ name = "download_glot_so"
 path = "src/bin/download_glot_so.rs"
 
 [[bin]]
-name = "download_somali_tinystories_so"
-path = "src/bin/download_somali_tinystories_so.rs"
-
-[[bin]]
 name = "download_somali_web_corpus_so"
 path = "src/bin/download_somali_web_corpus_so.rs"
 

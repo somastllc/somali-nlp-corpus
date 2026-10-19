@@ -159,13 +159,6 @@ pub const SOURCES: &[SourceEntry] = &[
         license_id: "MIT",
     },
     SourceEntry {
-        key: "somali-tinystories",
-        class: SourceClass::Document,
-        lid_policy: LidPolicy::Gate,
-        near_dedup: true,
-        license_id: "Other",
-    },
-    SourceEntry {
         key: "tanzil",
         class: SourceClass::Sentence,
         lid_policy: LidPolicy::TagOnly,
@@ -208,7 +201,6 @@ mod tests {
             "finepdfs",
             "fineweb-2",
             "somali-dataset",
-            "somali-tinystories",
             "tanzil",
             "quran-tanzil",
         ] {

@@ -55,7 +55,6 @@ MT560 records include a source tag:
 ./target/release/download_finepdfs_so     [--limit N] [--no-stream]
 ./target/release/download_fineweb2_so     [--limit N] [--no-stream]
 ./target/release/download_somali_dataset_so [--limit N] [--no-stream]
-./target/release/download_somali_tinystories_so [--limit N] [--no-stream]
 ```
 
 To run every downloader concurrently with one retry each, recording rows and bytes per
@@ -92,7 +91,6 @@ Default outputs:
 | FinePDFs | `data/raw/finepdfs/finepdfs_so.jsonl` |
 | FineWeb-2 | `data/raw/fineweb-2/fineweb-2_so.jsonl` |
 | Somali Alpaca | `data/raw/somali-dataset/somali-dataset_so.jsonl` |
-| Somali TinyStories | `data/raw/somali-tinystories/somali-tinystories_so.jsonl` |
 
 Recommended download order: HPLT → CC100 → mC4 → OPUS → MADLAD → MT560 → Wikipedia → XLSum → NLLB → Tanzil.
 

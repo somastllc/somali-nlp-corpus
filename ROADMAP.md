@@ -21,7 +21,7 @@ M1 Foundation ─▶ M2 Public datasets ─▶ M3 Pipeline ─▶ M4 Collection 
 - [x] `corpus-tools` crate with shared download utilities
 - [x] Downloaders: HPLT, CC100, mC4, OPUS, MADLAD, MT560, QuranEnc, Tanzil,
       Wikipedia, XL-Sum, NLLB, Glot500, Somali Web Corpus, FinePDFs, FineWeb-2,
-      Somali Alpaca, Somali TinyStories (seventeen total)
+      Somali Alpaca (sixteen total)
 - [x] `merge_corpora` to combine raw JSONL sources
 - [x] Architecture and pipeline documentation
 
@@ -122,7 +122,7 @@ Add targeted Somali text beyond public dumps.
 | Milestone | Theme | Status |
 |-----------|-------|--------|
 | M1 | Foundation | done |
-| M2 | Public dataset download + merge (17 sources) | done |
+| M2 | Public dataset download + merge (16 sources) | done |
 | M3 | Cleaning, dedup, langid pipeline | done |
 | M3.5 | v0.2 deep clean + full pipeline run (17-src measured) | done |
 | M4 | Web & Wikipedia collection | planned |

@@ -24,7 +24,6 @@ merge_source_order = [
   "finepdfs",
   "fineweb-2",
   "somali-dataset",
-  "somali-tinystories",
 ]
 
 [clean]

@@ -33,7 +33,7 @@ milestones and [CHANGELOG.md](CHANGELOG.md) for project history.
 
 - Downloaders for HPLT, CC100, mC4, OPUS, MADLAD, MT560, QuranEnc, Tanzil,
   Wikipedia, XL-Sum, NLLB, Glot500, Somali Web Corpus, FinePDFs, FineWeb-2, Somali
-  Alpaca (`Somali_dataset`), and Somali TinyStories
+  Alpaca (`Somali_dataset`)
 - Streaming merge and exact deduplication
 - Text normalization, language identification, source-aware deep cleaning, and
   MinHash/LSH near-deduplication
@@ -119,7 +119,6 @@ Run the 17 downloaders:
 ./target/release/download_finepdfs_so
 ./target/release/download_fineweb2_so
 ./target/release/download_somali_dataset_so
-./target/release/download_somali_tinystories_so
 ```
 
 Then run every processing stage:
@@ -144,7 +143,6 @@ streaming, but the largest stages still require substantial disk space and runti
 | FinePDFs (`som_Latn`) | document | ODC-BY |
 | FineWeb-2 (`som_Latn`) | document | ODC-BY |
 | Somali Alpaca (`burtugeey/Somali_dataset`) | document | MIT |
-| Somali TinyStories (`Zyroxx66/somali-tinystories`) | document | unspecified upstream |
 | Somali Wikipedia | document | CC-BY-SA-4.0 |
 | XL-Sum Somali | document | CC-BY-4.0 |
 | OPUS ParaCrawl (`en-so`) | sentence | CC0-1.0 |
@@ -204,7 +202,7 @@ The repository includes two trained tokenizer artifacts:
 Scored on 64,041 held-out documents from the 17-source corpus, against 1.8105 for
 XLM-RoBERTa-base and 2.6349 for BERT-base on the same text. v2's vocabulary was trained on
 the earlier 11-source corpus and was not retrained for the six sources added since. On the
-holdout, FineWeb-2 (1.3395) and Somali TinyStories (1.2756) tokenize at or below the
+holdout, FineWeb-2 (1.3395) tokenizes at or below the
 mean of 1.3444; Somali Alpaca (1.4022) is slightly above it, and FinePDFs (1.4906) is in
 line with Wikipedia (1.4842) and mC4 (1.4742), which v2 was trained on.
 

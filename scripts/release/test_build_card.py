@@ -45,16 +45,33 @@ def stats(documents: int = 3) -> dict:
 
 
 def test_card_numbers_come_from_the_manifest_and_stats() -> None:
-    card = bc.build_card(manifest(), stats(), "somast/x", "t@example.org")
+    card = bc.build_card(manifest(), stats(), "somast/x", "t@example.org", "1.0.0")
     assert "**3 documents, 60 words, 81 tokens**" in card
     assert "| `open` | 2 |" in card
     assert "| `non-commercial` | 1 |" in card
     assert "t@example.org" in card
+    assert "1.350 tokens per word" in card
+
+
+def test_card_is_gated_and_states_its_version() -> None:
+    card = bc.build_card(manifest(), stats(), "somast/x", "t@example.org", "1.2.3")
+    header = card.split("---")[1]
+    assert "extra_gated_prompt:" in header
+    assert "extra_gated_fields:" in header
+    assert "takedown requests sent to t@example.org" in header
+    assert "revision=\"v1.2.3\"" in card
+    assert "version **1.2.3**" in card
+
+
+def test_cargo_version_reads_the_workspace_version(tmp_path) -> None:
+    toml = tmp_path / "Cargo.toml"
+    toml.write_text('[workspace.package]\nversion = "2.4.6"\nedition = "2021"\n', encoding="utf-8")
+    assert bc.cargo_version(toml) == "2.4.6"
 
 
 def test_mismatched_stats_are_refused() -> None:
     with pytest.raises(SystemExit, match="re-run tokenize_corpus"):
-        bc.build_card(manifest(3), stats(4), "somast/x", "t@example.org")
+        bc.build_card(manifest(3), stats(4), "somast/x", "t@example.org", "1.0.0")
 
 
 def test_attribution_lists_glot_sub_sources_with_their_license() -> None:

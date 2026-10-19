@@ -10,11 +10,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 DEFAULT_RELEASE = Path("release")
 DEFAULT_TOKEN_STATS = Path("tokenizer/corpus_token_stats.json")
 DEFAULT_REPO_ID = "somast/somali-nlp-corpus"
+DEFAULT_CARGO_TOML = Path("Cargo.toml")
 
 # Upstream details per source key: display name, URL, and what the upstream asks of users.
 SOURCES = {
@@ -85,7 +87,39 @@ configs:
   default: true
 - config_name: non-commercial
   data_files: data/non-commercial/*.parquet
+extra_gated_prompt: >-
+  This corpus mixes text under many licenses. Each record names its own license in the
+  `license` field, and you are responsible for following it. Records in the
+  `non-commercial` configuration may not be used commercially. By requesting access you
+  also agree not to try to identify private individuals from the text and to honor
+  takedown requests sent to {contact}.
+extra_gated_fields:
+  Name: text
+  Organization: text
+  Intended use:
+    type: select
+    options:
+    - Research
+    - Education
+    - Commercial product
+    - Other
+  I will follow the license of every record I use: checkbox
+  I will not try to identify private individuals: checkbox
 ---
+"""
+
+VERSIONING = """## Versions
+
+Releases use [semantic versioning](https://semver.org). Each release is a git tag
+(`v{version}`) on this repository and on the GitHub project, and `main` always holds the
+latest one.
+
+- **Major**: a change to the record schema, or a removal or relicensing that breaks existing users.
+- **Minor**: new sources or a substantially larger corpus.
+- **Patch**: takedowns, cleaning corrections, and metadata fixes.
+
+Pin a release with `load_dataset("{repo}", revision="v{version}")`. This card describes
+version **{version}**; see the changelog at <https://github.com/somastllc/somali-nlp-corpus/blob/main/CHANGELOG.md>.
 """
 
 
@@ -132,18 +166,19 @@ def check_consistent(manifest: dict, stats: dict) -> None:
         )
 
 
-def build_card(manifest: dict, stats: dict, repo: str, contact: str) -> str:
+def build_card(manifest: dict, stats: dict, repo: str, contact: str, version: str) -> str:
     check_consistent(manifest, stats)
     total = manifest["records"]
     tv2 = stats["tokenizers"]["v2"]
     open_info = manifest["tiers"]["open"]
     nc_info = manifest["tiers"]["non-commercial"]
-    lines = [CARD_HEADER.format(repo=repo)]
+    lines = [CARD_HEADER.format(repo=repo, contact=contact)]
     lines.append("# Somali NLP Corpus\n")
     lines.append(
         f"A cleaned, deduplicated Somali text corpus for NLP and language-model research: "
         f"**{human(total)} documents, {human(tv2['words'])} words, "
-        f"{human(tv2['total_tokens'])} tokens** (v2 ByteLevel BPE, 1.365 tokens per word) "
+        f"{human(tv2['total_tokens'])} tokens** (v2 ByteLevel BPE, "
+        f"{tv2['total_tokens'] / tv2['words']:.3f} tokens per word) "
         f"from {len(set(open_info['by_source']) | set(nc_info['by_source']))} public sources.\n"
     )
     lines.append("## Two license tiers\n")
@@ -206,13 +241,15 @@ def build_card(manifest: dict, stats: dict, repo: str, contact: str) -> str:
         "a few thousand with high confidence are junk or foreign text. Use `detected_language` and "
         "`lang_score` to filter.\n"
         "- **Personal data is masked on a best-effort basis.** URLs, emails and common phone "
-        "formats are replaced with `⟨url⟩`, `⟨email⟩` and `⟨phone⟩`. Names and other personal "
-        "details in news text remain.\n"
+        "formats are replaced with `⟨url⟩`, `⟨email⟩` and `⟨phone⟩`. A few dozen unusual phone "
+        "formats (for example 12-digit numbers after a `tel` label) remain, and names and other "
+        "personal details in news text are not removed.\n"
         "- **Quality is measured automatically, not by human review.** Dialect and register "
         "coverage were not assessed.\n"
         "- **Some sources were excluded for licensing:** MTData, Earthlings (GPL-3.0), Bible_crawled "
         "and Bible_pbc rows of Glot500; QuranEnc and Tanzil Qur'an translations; Somali TinyStories.\n"
     )
+    lines.append(VERSIONING.format(version=version, repo=repo))
     lines.append("## Takedown\n")
     lines.append(
         f"If you own text in this corpus and want it removed, contact {contact} with the record ids "
@@ -275,19 +312,29 @@ def build_attribution(manifest: dict, stats: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def cargo_version(path: Path) -> str:
+    """Workspace version from Cargo.toml, so the card cannot name a different release."""
+    match = re.search(r'^version\s*=\s*"([^"]+)"', path.read_text(encoding="utf-8"), re.MULTILINE)
+    if not match:
+        raise SystemExit(f"no version found in {path}")
+    return match.group(1)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--release", type=Path, default=DEFAULT_RELEASE)
     parser.add_argument("--token-stats", type=Path, default=DEFAULT_TOKEN_STATS)
     parser.add_argument("--repo-id", default=DEFAULT_REPO_ID)
     parser.add_argument("--contact", required=True, help="Takedown contact, for example an email address")
+    parser.add_argument("--cargo-toml", type=Path, default=DEFAULT_CARGO_TOML)
     args = parser.parse_args()
+    version = cargo_version(args.cargo_toml)
 
     manifest = load_json(args.release / "manifest.json")
     stats = load_json(args.token_stats)
     check_consistent(manifest, stats)
     (args.release / "README.md").write_text(
-        build_card(manifest, stats, args.repo_id, args.contact), encoding="utf-8"
+        build_card(manifest, stats, args.repo_id, args.contact, version), encoding="utf-8"
     )
     (args.release / "ATTRIBUTION.md").write_text(build_attribution(manifest, stats), encoding="utf-8")
     print(f"wrote {args.release / 'README.md'} and {args.release / 'ATTRIBUTION.md'}")

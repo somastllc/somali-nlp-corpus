@@ -15,7 +15,7 @@ fn script_re() -> &'static Regex {
 
 fn tag_re() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
-    RE.get_or_init(|| Regex::new(r"(?is)</?[a-zA-Z][a-zA-Z0-9]*(\s[^>]*|/)?>").unwrap())
+    RE.get_or_init(|| Regex::new(r"(?is)</?[a-zA-Z][a-zA-Z0-9]*(\s[^>]*|/|;|<[^>]*)?>").unwrap())
 }
 
 pub fn has_reject_html(text: &str) -> bool {
@@ -81,6 +81,12 @@ mod tests {
     #[test]
     fn strips_inline_tags() {
         assert_eq!(strip_benign_tags("a <b>bold</b> c"), "a bold c");
+    }
+
+    #[test]
+    fn strips_malformed_tags_seen_in_web_text() {
+        assert_eq!(strip_benign_tags("Sanadkii <span;>1995 wuxuu"), "Sanadkii 1995 wuxuu");
+        assert_eq!(strip_benign_tags("Haa!!<br< span=\"\">"), "Haa!!\n");
     }
 
     #[test]

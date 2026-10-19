@@ -107,7 +107,7 @@ pub const SOURCES: &[SourceEntry] = &[
         class: SourceClass::Document,
         lid_policy: LidPolicy::Gate,
         near_dedup: true,
-        license_id: "CC-BY-4.0",
+        license_id: "CC-BY-NC-SA-4.0",
     },
     SourceEntry {
         key: "nllb",
@@ -195,6 +195,16 @@ mod tests {
     fn document_sources_use_gate_policy() {
         assert_eq!(lookup("hplt").unwrap().lid_policy, LidPolicy::Gate);
         assert!(lookup("hplt").unwrap().near_dedup);
+    }
+
+    #[test]
+    fn xlsum_is_non_commercial_share_alike() {
+        // The XL-Sum card restricts the data to non-commercial research (CC BY-NC-SA 4.0).
+        let license = lookup("xlsum").unwrap().license();
+        assert_eq!(
+            serde_json::to_string(&license).unwrap(),
+            "\"CC-BY-NC-SA-4.0\""
+        );
     }
 
     #[test]

@@ -96,13 +96,6 @@ pub const SOURCES: &[SourceEntry] = &[
         license_id: "CC-BY-4.0",
     },
     SourceEntry {
-        key: "quran",
-        class: SourceClass::Sentence,
-        lid_policy: LidPolicy::TagOnly,
-        near_dedup: false,
-        license_id: "Other",
-    },
-    SourceEntry {
         key: "wikipedia",
         class: SourceClass::Document,
         lid_policy: LidPolicy::Gate,
@@ -158,20 +151,6 @@ pub const SOURCES: &[SourceEntry] = &[
         near_dedup: true,
         license_id: "MIT",
     },
-    SourceEntry {
-        key: "tanzil",
-        class: SourceClass::Sentence,
-        lid_policy: LidPolicy::TagOnly,
-        near_dedup: false,
-        license_id: "Other",
-    },
-    SourceEntry {
-        key: "quran-tanzil",
-        class: SourceClass::Sentence,
-        lid_policy: LidPolicy::TagOnly,
-        near_dedup: false,
-        license_id: "Other",
-    },
 ];
 
 /// Look up a source entry by its registry key.
@@ -192,7 +171,6 @@ mod tests {
             "madlad",
             "opus",
             "mt560",
-            "quran",
             "wikipedia",
             "xlsum",
             "nllb",
@@ -201,8 +179,6 @@ mod tests {
             "finepdfs",
             "fineweb-2",
             "somali-dataset",
-            "tanzil",
-            "quran-tanzil",
         ] {
             assert!(lookup(key).is_some(), "missing source: {key}");
         }

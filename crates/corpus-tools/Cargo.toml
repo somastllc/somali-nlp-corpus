@@ -35,10 +35,6 @@ name = "download_mt560_so"
 path = "src/bin/download_mt560_so.rs"
 
 [[bin]]
-name = "download_quran_so"
-path = "src/bin/download_quran_so.rs"
-
-[[bin]]
 name = "merge_corpora"
 path = "src/bin/merge_corpora.rs"
 
@@ -49,10 +45,6 @@ path = "src/bin/download_wikipedia_so.rs"
 [[bin]]
 name = "download_xlsum_so"
 path = "src/bin/download_xlsum_so.rs"
-
-[[bin]]
-name = "download_quran_tanzil"
-path = "src/bin/download_quran_tanzil.rs"
 
 [[bin]]
 name = "download_nllb_so"

@@ -62,6 +62,7 @@ strip_benign_html = true
 reject_script_html = true
 mask_urls = true
 mask_emails = true
+mask_phones = true
 boilerplate_line_drop = true
 boilerplate_reject_ratio = 0.40
 symbol_ratio_reject = 0.45

@@ -153,7 +153,7 @@ pub fn deep_clean_record(
         }
     };
 
-    text = contact::mask_contacts(&text, cfg.mask_urls, cfg.mask_emails);
+    text = contact::mask_contacts(&text, cfg.mask_urls, cfg.mask_emails, cfg.mask_phones);
     text = intra_dedup::dedup_paragraphs(
         &text,
         cfg.intra_dedup.enabled,

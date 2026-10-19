@@ -32,6 +32,9 @@ license-tiered Parquet export for Hugging Face.
   for the gated repository, versioning policy) and `ATTRIBUTION.md` (upstream credits, Glot500
   sub-source table, Common Crawl and share-alike notices). Counts come from the manifest and the
   token statistics, and the build fails if they describe different data
+- **Tokenizer holdout re-scored on the 1.0.0 corpus:** 63,542 documents, v1 1.3830 and v2
+  **1.3440** mean tokens/word, against 1.8100 (XLM-RoBERTa-base) and 2.6344 (BERT-base). v2 was
+  not retrained
 - **Phone-number masking** in deep clean (`mask_phones`, on by default): international numbers,
   Somali local mobile numbers, and local numbers that follow a phone keyword become `⟨phone⟩`.
   Thousands separators, ISBNs, and dotted prices are left alone
@@ -187,9 +190,9 @@ license-tiered Parquet export for Hugging Face.
   Names and other personal details in news text are not masked at all.
 - 40 final records remain on review (`high_symbol_ratio`).
 - The share-alike terms of CC-100, Wikipedia, and FLORES-200 have not had a legal review.
-- The tokenizer holdout benchmark (`tokenizer/benchmark_results.json`, `tokenizer_stats.json`)
-  was last scored on the 17-source corpus and has not been re-run; the full-corpus token counts
-  in `corpus_token_stats.json` are current.
+- The v2 tokenizer was trained on the earlier 11-source corpus and not retrained for the
+  sources added since; FinePDFs (1.4905 tokens/word on the holdout) and Wikipedia (1.4971) cost
+  the most tokens per word.
 
 ### Planned
 

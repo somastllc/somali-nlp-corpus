@@ -207,19 +207,18 @@ The repository includes two trained tokenizer artifacts:
 
 | Metric | v1 (32k) | **v2 (48k)** |
 | ------ | --------: | -----------: |
-| Mean tokens/word | 1.3834 | **1.3444** |
+| Mean tokens/word | 1.3830 | **1.3440** |
 | P95 tokens/word | 1.8889 | **1.8333** |
-| Bytes/token | 4.764 | **4.834** |
+| Bytes/token | 4.766 | **4.835** |
 | Round-trip fidelity | 0.000 | **1.000** |
-| Documents emitting `<unk>` | 9 | **0** |
+| Documents emitting `<unk>` | 8 | **0** |
 
-Scored on 64,041 held-out documents from the 17-source corpus of 2026-09-24 (not re-scored on
-the 14-source corpus), against 1.8105 for
-XLM-RoBERTa-base and 2.6349 for BERT-base on the same text. v2's vocabulary was trained on
-the earlier 11-source corpus and was not retrained for the six sources added since. On the
-holdout, FineWeb-2 (1.3395) tokenizes at or below the
-mean of 1.3444; Somali Alpaca (1.4022) is slightly above it, and FinePDFs (1.4906) is in
-line with Wikipedia (1.4842) and mC4 (1.4742), which v2 was trained on.
+Scored on 63,542 held-out documents from the 14-source 1.0.0 corpus, against 1.8100 for
+XLM-RoBERTa-base and 2.6344 for BERT-base on the same text. v2's vocabulary was trained on
+the earlier 11-source corpus and was not retrained for the sources added since. On the
+holdout, FineWeb-2 (1.3394) tokenizes at or below the mean of 1.3440; Somali Alpaca (1.4022)
+is slightly above it, and FinePDFs (1.4905) is in line with Wikipedia (1.4971) and mC4
+(1.4725), which v2 was trained on.
 
 The 1,129,084,663-token release total (1.3653 tokens/word over the full corpus) comes from
 `tokenize_corpus.py`, which encodes every document in the corpus rather than extrapolating

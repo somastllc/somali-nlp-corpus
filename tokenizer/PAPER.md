@@ -2,10 +2,12 @@
 
 **Somali NLP Corpus Tokenizer Research Note**
 
-> **Scope of the figures.** The benchmark below was scored on the 2026-09-24 seventeen-source
+> **Scope of the figures.** The tables below were scored on the 2026-09-24 seventeen-source
 > corpus, which still contained Somali TinyStories, QuranEnc and Tanzil. Release 1.0.0 ships
-> fourteen sources without them; the benchmark was not re-run on it. The 1.0.0 full-corpus token
-> total (1,129,084,663; 1.3653 tokens/word) is measured in `corpus_token_stats.json`.
+> fourteen sources without them. Re-scored on the 1.0.0 holdout (63,542 documents), v2 measures
+> 1.3440 mean tokens/word against 1.3830 for v1, 1.8100 for XLM-RoBERTa-base, and 2.6344 for
+> BERT-base (`benchmark_results.json`). The 1.0.0 full-corpus token total (1,129,084,663;
+> 1.3653 tokens/word) is in `corpus_token_stats.json`.
 
 ---
 

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to SomNLP-Corpus are documented here.
+All notable changes to Somali NLP Corpus are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
@@ -113,6 +113,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- **Renamed to Somali NLP Corpus** (repository `somali-nlp-corpus`, dataset
+  `somast/somali-nlp-corpus`), formerly SomNLP-Corpus. The new name says what the project is
+  and is the same on GitHub and the Hugging Face Hub. Past changelog entries keep the old name.
+  The `Cargo.toml` repository URL, which pointed at an old organization, now points at
+  `goobolabs/somali-nlp-corpus`
 - **Pipeline stages use every core.** `clean`, `lid`, `deep_clean`, and `near_dedup` parse,
   process, and serialize records on a rayon pool in batches, while stats, exact dedup, and
   writes stay sequential in input order. Output is byte-identical to the serial path

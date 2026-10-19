@@ -1,6 +1,6 @@
 # Source Registry
 
-Formal catalog of all data sources for SomNLP-Corpus. Each source has a stable
+Formal catalog of all data sources for Somali NLP Corpus. Each source has a stable
 registry key used in metadata, IDs, and file paths.
 
 See also: [METADATA_SCHEMA.md](METADATA_SCHEMA.md), [PLAN.md](../PLAN.md).

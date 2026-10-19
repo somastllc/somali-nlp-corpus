@@ -1,4 +1,4 @@
-# SomNLP-Corpus Phase 3 pipeline config — single source of truth for all knobs.
+# Somali NLP Corpus Phase 3 pipeline config — single source of truth for all knobs.
 # See docs/CLEANING_PLAN.md. Changed knobs should be recorded in the changelog.
 
 version = "1"

@@ -1,6 +1,6 @@
 # Schema Review
 
-Senior review of schema and metadata decisions for SomNLP-Corpus.
+Senior review of schema and metadata decisions for Somali NLP Corpus.
 
 Date: 2026-06-10. Schema version: `1`.
 

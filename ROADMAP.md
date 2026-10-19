@@ -1,6 +1,6 @@
 # Roadmap
 
-Phases and milestones for SomNLP-Corpus. See [PLAN.md](PLAN.md) for strategy and
+Phases and milestones for Somali NLP Corpus. See [PLAN.md](PLAN.md) for strategy and
 [docs/SOURCES.md](docs/SOURCES.md) for the source catalog.
 
 ```text

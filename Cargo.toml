@@ -5,8 +5,8 @@ resolver = "2"
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-authors = ["SomNLP Contributors"]
-repository = "https://github.com/dugsiiye-labs/SomNLP-Corpus"
+authors = ["Somali NLP Corpus Contributors"]
+repository = "https://github.com/goobolabs/somali-nlp-corpus"
 
 [workspace.dependencies]
 # Serialization

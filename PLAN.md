@@ -1,4 +1,4 @@
-# SomNLP-Corpus — Project Plan
+# Somali NLP Corpus — Project Plan
 
 A high-quality, reproducible **Somali** text corpus for NLP, LLM, and AI research.
 **Rust-first** data pipeline.
@@ -6,7 +6,7 @@ A high-quality, reproducible **Somali** text corpus for NLP, LLM, and AI researc
 ## Vision
 
 Somali (`so`) is a low-resource language. Clean, well-documented Somali text is scarce,
-which holds back NLP and LLM development. **SomNLP-Corpus** builds a large, cleaned,
+which holds back NLP and LLM development. **Somali NLP Corpus** builds a large, cleaned,
 deduplicated Somali corpus as the foundation for downstream tasks: translation, NER,
 QA, instruction tuning, sentiment, speech, and evaluation.
 

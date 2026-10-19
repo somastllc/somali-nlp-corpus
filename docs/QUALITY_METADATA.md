@@ -11,7 +11,7 @@ See [METADATA_SCHEMA.md](METADATA_SCHEMA.md) for field semantics.
 ## Principle: preserve, don't erase
 
 Low-resource languages lose irrecoverable data when pipelines silently drop records.
-SomNLP-Corpus **never deletes** a record from the audit trail:
+Somali NLP Corpus **never deletes** a record from the audit trail:
 
 | Outcome | Where it goes |
 |---------|---------------|

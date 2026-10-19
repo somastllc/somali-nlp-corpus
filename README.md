@@ -1,4 +1,4 @@
-<h1 align="center">SomNLP-Corpus</h1>
+<h1 align="center">Somali NLP Corpus</h1>
 
 <p align="center">
   <strong>A reproducible Somali text corpus and data-processing pipeline for NLP and language-model research.</strong><br>
@@ -9,9 +9,11 @@
   Rust-first · streaming · configuration-driven · source-level provenance
 </p>
 
-SomNLP-Corpus downloads public Somali datasets, normalizes and filters their text,
+Somali NLP Corpus downloads public Somali datasets, normalizes and filters their text,
 removes exact and near duplicates, and emits training-ready JSONL. The repository also
 contains a corpus-trained ByteLevel BPE tokenizer.
+
+*Formerly SomNLP-Corpus.*
 
 ## Current release
 
@@ -245,7 +247,7 @@ Contribution workflow and code standards are in
 ## Repository layout
 
 ```text
-SomNLP-Corpus/
+somali-nlp-corpus/
 ├── configs/pipeline.toml       # pipeline settings and source order
 ├── crates/
 │   ├── common/                 # record types, hashing, source registry

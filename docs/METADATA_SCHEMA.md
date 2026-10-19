@@ -107,7 +107,7 @@ Across the full pipeline, every **CorpusRecord** must have:
 
 ## Licensing model
 
-SomNLP-Corpus does **not** ship under one global license. Each source has its own
+Somali NLP Corpus does **not** ship under one global license. Each source has its own
 terms. The `license` field on `CorpusRecord` carries the SPDX-style identifier for
 **that record's source**.
 

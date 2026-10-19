@@ -14,7 +14,7 @@ from pathlib import Path
 
 DEFAULT_RELEASE = Path("release")
 DEFAULT_TOKEN_STATS = Path("tokenizer/corpus_token_stats.json")
-DEFAULT_REPO_ID = "somast/SomNLP-Corpus"
+DEFAULT_REPO_ID = "somast/somali-nlp-corpus"
 
 # Upstream details per source key: display name, URL, and what the upstream asks of users.
 SOURCES = {
@@ -69,7 +69,7 @@ license_name: per-record
 license_link: https://huggingface.co/datasets/{repo}/blob/main/ATTRIBUTION.md
 language:
 - so
-pretty_name: SomNLP-Corpus
+pretty_name: Somali NLP Corpus
 size_categories:
 - 1M<n<10M
 task_categories:
@@ -139,7 +139,7 @@ def build_card(manifest: dict, stats: dict, repo: str, contact: str) -> str:
     open_info = manifest["tiers"]["open"]
     nc_info = manifest["tiers"]["non-commercial"]
     lines = [CARD_HEADER.format(repo=repo)]
-    lines.append("# SomNLP-Corpus\n")
+    lines.append("# Somali NLP Corpus\n")
     lines.append(
         f"A cleaned, deduplicated Somali text corpus for NLP and language-model research: "
         f"**{human(total)} documents, {human(tv2['words'])} words, "
@@ -195,7 +195,7 @@ def build_card(manifest: dict, stats: dict, repo: str, contact: str) -> str:
         "a second exact dedup), and near-deduplicated (MinHash/LSH, Jaccard 0.80, keeping the longest "
         "copy). Sentence sources (NLLB, OPUS, MT560) use a 5-word floor and exact dedup only. "
         "Rejected records are kept in sidecars in the pipeline repository. The pipeline is Rust, "
-        "configuration-driven, and reproducible: <https://github.com/goobolabs/SomNLP-Corpus>.\n"
+        "configuration-driven, and reproducible: <https://github.com/goobolabs/somali-nlp-corpus>.\n"
     )
     lines.append("## Known limitations\n")
     lines.append(
@@ -220,7 +220,7 @@ def build_card(manifest: dict, stats: dict, repo: str, contact: str) -> str:
     )
     lines.append("## Citation\n")
     lines.append(
-        "```bibtex\n@misc{somnlp_corpus,\n  title  = {SomNLP-Corpus: a cleaned Somali text corpus},\n"
+        "```bibtex\n@misc{somali_nlp_corpus,\n  title  = {Somali NLP Corpus: a cleaned Somali text corpus},\n"
         "  author = {Goobo Labs},\n  year   = {2026},\n"
         f"  url    = {{https://huggingface.co/datasets/{repo}}}\n}}\n```\n"
     )
@@ -230,7 +230,7 @@ def build_card(manifest: dict, stats: dict, repo: str, contact: str) -> str:
 def build_attribution(manifest: dict, stats: dict) -> str:
     lines = ["# Attribution and notices\n"]
     lines.append(
-        "SomNLP-Corpus is compiled from the public datasets below. Text was normalized, filtered "
+        "Somali NLP Corpus is compiled from the public datasets below. Text was normalized, filtered "
         "and deduplicated; it was not otherwise altered. Each record's `license` field names the "
         "license of its source. Credit the original dataset when you use its records.\n"
     )

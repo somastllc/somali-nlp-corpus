@@ -30,6 +30,11 @@ See also: [METADATA_SCHEMA.md](METADATA_SCHEMA.md), [PLAN.md](../PLAN.md).
 | `somali-dataset` | Somali Alpaca instructions | instruction data | A | 44,839 rows (HF train) | MIT | `download_somali_dataset_so` | done | HF `burtugeey/Somali_dataset`; instruction, input, and output joined per row |
 | `tanzil` | Tanzil Qur'an Somali (Abduh) | religious | A | 6,236 ayahs | see source | `download_quran_tanzil` | done | Separate translation from QuranEnc; no footnotes upstream |
 
+### Excluded sources
+
+`somali-tinystories` (Hugging Face `Zyroxx66/somali-tinystories`, 42,000 stories) was removed
+from the pipeline: its dataset card states no license, so redistribution is not clear.
+
 ### Track A licensing note
 
 There is **no single corpus license**. Redistribution of the combined corpus requires
@@ -38,13 +43,40 @@ from this registry (see [METADATA_SCHEMA.md](METADATA_SCHEMA.md)).
 
 ### Track A outlook
 
-Seventeen public sources total **18.2M raw documents** (NLLB dominates). The full
-seventeen-source Track A corpus measured **7,981,982 final documents · 832M words ·
-1,136M v2 tokens** (2026-09-24 run — see [README.md](../README.md)). The previous
-thirteen-source run (2026-09-02) measured 7.35M final documents · 666M words · 912M v2 tokens. Incremental measurement
+Sixteen public sources total **18.2M raw documents** (NLLB dominates). The full
+sixteen-source Track A corpus measured **7,959,336 final documents · 830M words ·
+1,133M v2 tokens** (2026-10-19 run — see [README.md](../README.md)). Previous runs:
+seventeen sources (2026-09-24) · 7.98M final documents · 832M words · 1,136M v2 tokens, and
+thirteen sources (2026-09-02) · 7.35M final documents · 666M words · 912M v2 tokens. Incremental measurement
 notes: [reports/runs/MEASUREMENT.md](../reports/runs/MEASUREMENT.md).
 
-### Measured final documents (2026-09-24)
+### Measured final documents (2026-10-19)
+
+| Key | Raw | Kept at merge | Final | Words | v2 tokens |
+|-----|----:|-------------:|------:|------:|----------:|
+| `nllb` | 10,229,073 | 4,372,863 | 4,107,332 | 62,060,576 | 82,077,792 |
+| `glot` | 3,915,898 | 3,840,616 | 1,432,165 | 66,935,472 | 89,392,345 |
+| `fineweb-2` | 1,070,384 | 854,615 | 589,792 | 156,976,582 | 208,769,273 |
+| `mc4` | 893,012 | 892,852 | 586,092 | 214,035,028 | 313,668,364 |
+| `hplt` | 966,507 | 798,364 | 554,915 | 184,732,452 | 247,502,074 |
+| `cc100` | 396,524 | 374,721 | 296,154 | 49,297,022 | 61,321,508 |
+| `madlad` | 200,494 | 200,484 | 128,706 | 61,836,121 | 82,261,824 |
+| `somali-web-corpus` | 217,528 | 217,390 | 121,764 | 4,890,563 | 6,111,014 |
+| `mt560` | 161,865 | 51,083 | 49,195 | 1,162,745 | 1,423,242 |
+| `somali-dataset` | 44,839 | 44,793 | 37,259 | 5,776,804 | 7,967,427 |
+| `finepdfs` | 21,781 | 21,780 | 20,750 | 18,628,709 | 27,659,809 |
+| `opus` | 14,879 | 12,296 | 12,125 | 381,720 | 517,110 |
+| `quran` | 7,373 | 7,277 | 7,072 | 160,068 | 240,053 |
+| `quran-tanzil` | 6,236 | 6,048 | 5,773 | 106,282 | 164,038 |
+| `wikipedia` | 9,021 | 8,994 | 5,215 | 1,120,134 | 1,733,935 |
+| `xlsum` | 7,452 | 7,451 | 5,027 | 1,758,807 | 2,189,823 |
+| **Total** | **18,162,866** | **11,711,627** | **7,959,336** | **829,859,085** | **1,132,999,631** |
+
+Raw, merge, and final counts come from `reports/01_merge_stats.json` and
+`reports/05_near_dedup_stats.json`; words and tokens from `tokenizer/corpus_token_stats.json`.
+Per-stage drops and timings: [runs/2026-10-19.md](runs/2026-10-19.md).
+
+### Measured final documents (2026-09-24, 17 sources, superseded)
 
 | Key | Raw | Kept at merge | Final | Words | v2 tokens |
 |-----|----:|-------------:|------:|------:|----------:|

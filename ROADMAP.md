@@ -75,8 +75,9 @@ merge → clean → LID → deep_clean → near dedup → final
 - [x] `run_pipeline` chains all five post-merge stages
 - [x] Full-corpus v0.2 re-run and audit re-measurement (`reports/06_cleaning_audit.md`)
 
-**Exit (met):** 18.2M raw → **7,981,982** final docs · **832M words** · 8.4 GB
-(2026-09-24 seventeen-source run; previous: 7,352,961 docs, 2026-09-02, thirteen sources). See [reports/runs/MEASUREMENT.md](reports/runs/MEASUREMENT.md).
+**Exit (met):** 18.2M raw → **7,959,336** final docs · **830M words** · 8.45 GiB
+(2026-10-19 sixteen-source run; previous: 7,981,982 docs, 2026-09-24, seventeen sources;
+7,352,961 docs, 2026-09-02, thirteen sources). See [reports/runs/MEASUREMENT.md](reports/runs/MEASUREMENT.md).
 
 ---
 
@@ -124,7 +125,7 @@ Add targeted Somali text beyond public dumps.
 | M1 | Foundation | done |
 | M2 | Public dataset download + merge (16 sources) | done |
 | M3 | Cleaning, dedup, langid pipeline | done |
-| M3.5 | v0.2 deep clean + full pipeline run (17-src measured) | done |
+| M3.5 | v0.2 deep clean + full pipeline run (16-src measured) | done |
 | M4 | Web & Wikipedia collection | planned |
 | M5 | Extended sources | planned |
 | M6 | Release v0.2-clean (Hugging Face) | in progress |

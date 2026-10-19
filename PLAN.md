@@ -77,15 +77,14 @@ collection adds fresher, higher-quality, domain-specific text that public dumps 
 | QuranEnc (Yacob Yusuf) | ~7.4K rows (6,236 verses + 1,137 footnotes) |
 | Tanzil (Abduh) | ~6.2K ayahs (no footnotes) |
 | Glot500 | 3.9M rows raw · 3.84M kept at merge |
-| Somali Web Corpus | 217,528 rows raw · 121,777 final documents |
-| FinePDFs | 21,781 rows raw · 20,771 final documents |
-| FineWeb-2 | 1,070,384 rows raw · 589,824 final documents |
-| Somali Alpaca | 44,839 rows raw · 37,512 final documents |
-| Somali TinyStories | 42,000 rows raw · 21,100 final documents |
+| Somali Web Corpus | 217,528 rows raw · 121,764 final documents |
+| FinePDFs | 21,781 rows raw · 20,750 final documents |
+| FineWeb-2 | 1,070,384 rows raw · 589,792 final documents |
+| Somali Alpaca | 44,839 rows raw · 37,259 final documents |
 
-All seventeen downloaders are implemented. After cross-source dedup and quality filtering,
-full Track A measured **7.98M final documents · 832M words · 1.14B v2 subword tokens**
-(2026-09-24 run — see [README.md](README.md)).
+All sixteen downloaders are implemented. After cross-source dedup and quality filtering,
+full Track A measured **7.96M final documents · 830M words · 1.13B v2 subword tokens**
+(2026-10-19 run — see [README.md](README.md)).
 
 ### Track B — collected sources (estimates)
 

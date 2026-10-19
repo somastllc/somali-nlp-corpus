@@ -15,11 +15,11 @@ contains a corpus-trained ByteLevel BPE tokenizer.
 
 ## Current release
 
-The latest measured build completed on **2026-09-24** and combines **17 public sources**:
+The latest measured build completed on **2026-10-19** and combines **16 public sources**:
 
 | Final documents | Words | v2 subword tokens | JSONL size |
 | --------------: | ----: | ----------------: | ---------: |
-| 7,981,982 | 832,264,349 | 1,136,027,958 | 8.4 GB |
+| 7,959,336 | 829,859,085 | 1,132,999,631 | 8.45 GiB |
 
 The release artifact is `data/final/final_so.jsonl`. Corpus data is not stored in Git;
 build it with the pipeline below. Trained tokenizer artifacts and their benchmark summary
@@ -53,17 +53,18 @@ raw/       merged/              cleaned/  lid/   deep_clean/  final/
 
 | Stage | Documents | Removed at stage |
 | ----- | --------: | ---------------: |
-| Downloaded | 18,204,866 | — |
-| Merged | 11,708,895 | 6,495,971 |
-| Cleaned | 9,016,020 | 2,692,875 |
-| LID verified | 8,698,655 | 317,365 |
-| Deep cleaned | 8,638,442 | 60,213 |
-| **Final** | **7,981,982** | **656,460** |
+| Downloaded | 18,162,866 | — |
+| Merged | 11,711,627 | 6,451,239 |
+| Cleaned | 9,018,923 | 2,692,704 |
+| LID verified | 8,701,559 | 317,364 |
+| Deep cleaned | 8,587,177 | 114,382 |
+| **Final** | **7,959,336** | **627,841** |
 
-These figures describe the 2026-09-24 run (17 sources) and may change when upstream
-datasets change. Previous run (13 sources, 2026-09-02): 7.35M final · 666M words ·
-912M tokens. Each local run writes detailed stage statistics under `reports/`; the timings and
-per-source funnel for this run are in [docs/runs/2026-09-24.md](docs/runs/2026-09-24.md).
+These figures describe the 2026-10-19 run (16 sources) and may change when upstream
+datasets change. Previous runs: 17 sources, 2026-09-24 (7.98M final · 832M words · 1.14B
+tokens); 13 sources, 2026-09-02 (7.35M final · 666M words · 912M tokens). Each local run
+writes detailed stage statistics under `reports/`; the timings, per-source funnel, and
+final-file validation for this run are in [docs/runs/2026-10-19.md](docs/runs/2026-10-19.md).
 
 Document-class sources use a 25-word minimum, Somali language-ID gating, and near
 deduplication. Sentence-class sources use a 5-word minimum and exact deduplication; their
@@ -100,7 +101,7 @@ build if you want a clean run.
 
 ### Build the full corpus
 
-Run the 17 downloaders:
+Run the 16 downloaders:
 
 ```bash
 ./target/release/download_hplt_so
@@ -199,15 +200,17 @@ The repository includes two trained tokenizer artifacts:
 | Round-trip fidelity | 0.000 | **1.000** |
 | Documents emitting `<unk>` | 9 | **0** |
 
-Scored on 64,041 held-out documents from the 17-source corpus, against 1.8105 for
+Scored on 64,041 held-out documents from the 17-source corpus of 2026-09-24 (not re-scored on
+the 16-source corpus), against 1.8105 for
 XLM-RoBERTa-base and 2.6349 for BERT-base on the same text. v2's vocabulary was trained on
 the earlier 11-source corpus and was not retrained for the six sources added since. On the
 holdout, FineWeb-2 (1.3395) tokenizes at or below the
 mean of 1.3444; Somali Alpaca (1.4022) is slightly above it, and FinePDFs (1.4906) is in
 line with Wikipedia (1.4842) and mC4 (1.4742), which v2 was trained on.
 
-The 1,136,027,958-token release total comes from `tokenize_corpus.py`, which encodes every
-document in the corpus rather than extrapolating from the holdout ratio.
+The 1,132,999,631-token release total (1.3653 tokens/word over the full corpus) comes from
+`tokenize_corpus.py`, which encodes every document in the corpus rather than extrapolating
+from the holdout ratio.
 
 To run the tokenizer tests and reproduce its preparation, training, and benchmark steps:
 

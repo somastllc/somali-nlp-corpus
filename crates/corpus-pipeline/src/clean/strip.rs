@@ -15,9 +15,24 @@ fn keep(c: char) -> bool {
     }
 }
 
-/// Strip control and invisible characters.
+/// Strip control and invisible characters. Line endings are normalized first: `\r\n`
+/// becomes `\n`, and a lone `\r` (old Mac endings) becomes `\n` instead of vanishing
+/// and gluing the neighbouring words together.
 pub fn strip_invisibles(text: &str) -> String {
-    text.chars().filter(|&c| keep(c)).collect()
+    let mut out = String::with_capacity(text.len());
+    let mut chars = text.chars().peekable();
+    while let Some(c) = chars.next() {
+        match c {
+            '\r' => {
+                if chars.peek() != Some(&'\n') {
+                    out.push('\n');
+                }
+            }
+            c if keep(c) => out.push(c),
+            _ => {}
+        }
+    }
+    out
 }
 
 /// Remove isolated U+FFFD replacement characters from otherwise kept documents.
@@ -42,6 +57,11 @@ mod tests {
     #[test]
     fn removes_carriage_return_and_controls() {
         assert_eq!(strip_invisibles("a\r\nb\u{0007}c"), "a\nbc");
+    }
+
+    #[test]
+    fn lone_carriage_return_keeps_line_boundary() {
+        assert_eq!(strip_invisibles("wanaagsan\rDadku"), "wanaagsan\nDadku");
     }
 
     #[test]

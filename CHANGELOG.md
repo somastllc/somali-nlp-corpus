@@ -1,24 +1,59 @@
 # Changelog
 
-All notable changes to SomNLP-Corpus are documented here.
+All notable changes to Somali NLP Corpus are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-10-19
+
+First release of the cleaned corpus as a dataset: 14 sources, per-record licenses, and a
+license-tiered Parquet export for Hugging Face.
+
 ### Added
 
+- **Fourteen-source measured run (2026-10-19, release 1.0.0)** — full Track A pipeline after the
+  deep-clean fixes, the license policy, and phone masking: 18.1M raw → 11.46M merged →
+  7,913,008 final documents · 826,973,689 words · **1,129,084,663 v2 subword tokens**
+  (1.3653 tokens/word), measured over every document. Stage funnel, timings, per-source drops,
+  and a final-file validation: [docs/runs/2026-10-19.md](docs/runs/2026-10-19.md)
+- **Per-record licenses.** Every record's `license` is the license of its own upstream dataset.
+  Glot500 is an aggregate, so its downloader now keeps the `dataset` column as
+  `provenance.subsource` and the license comes from a sub-source table in the registry. The
+  sub-sources `mtdata`, `Earthlings`, `Bible_crawled`, and `Bible_pbc` have no redistributable
+  license; they are excluded at merge, and so is any row with a missing or unknown sub-source
+  (303,550 rows). The corpus no longer contains a record with license `Other`
+- **License-tiered release export** (`scripts/release/export_release.py`): writes zstd Parquet
+  shards to `data/open` (commercial use allowed, 6,955,948 records) and `data/non-commercial`
+  (957,060 records) from each record's license, plus `manifest.json` and `SHA256SUMS`, and
+  verifies checksums and row counts. A license it does not recognize stops the export
+- **Dataset card and attribution generator** (`scripts/release/build_card.py`): the card for
+  `somast/somali-nlp-corpus` (configs, fields, sources with counts, limitations, access terms
+  for the gated repository, versioning policy) and `ATTRIBUTION.md` (upstream credits, Glot500
+  sub-source table, Common Crawl and share-alike notices). Counts come from the manifest and the
+  token statistics, and the build fails if they describe different data
+- **Tokenizer holdout re-scored on the 1.0.0 corpus:** 63,542 documents, v1 1.3830 and v2
+  **1.3440** mean tokens/word, against 1.8100 (XLM-RoBERTa-base) and 2.6344 (BERT-base). v2 was
+  not retrained
+- **Phone-number masking** in deep clean (`mask_phones`, on by default): international numbers,
+  Somali local mobile numbers, and local numbers that follow a phone keyword become `⟨phone⟩`.
+  Thousands separators, ISBNs, and dotted prices are left alone
+- **Exact dedup after deep clean.** Deep clean rewrites text, so records that differed before
+  can become identical. The deep-clean writer now drops later copies across all sources, first
+  seen wins, with reason `exact_duplicate_after_deep_clean` and `duplicate_of` set on the
+  reject sidecar record (53,189 records in the 2026-10-19 run)
 - **Seventeen-source measured run (2026-09-24)** — full Track A pipeline on all downloaders:
   18.2M raw → 11.71M merged → 7,981,982 final documents ·
   832M words · **1,136,027,958 v2 subword tokens** (1.3650 tokens/word),
   measured over every document. Timings, downloads, and per-source funnel:
   [docs/runs/2026-09-24.md](docs/runs/2026-09-24.md)
-- **FinePDFs, FineWeb-2, Somali Alpaca, and Somali TinyStories** registered in
+- **FinePDFs, FineWeb-2, and Somali Alpaca** registered in
   `crates/common/src/registry.rs` and appended to `merge_source_order`, so first-seen-wins
   exact dedup keeps the earlier sources' copy of any shared text. Near-dedup still keeps the
   longest member of each cluster, so a longer FineWeb-2 page can displace an HPLT or mC4
   near-duplicate. Contributions: FineWeb-2 (`fineweb-2`) 589,824 final documents (18.4% of
   tokens); FinePDFs (`finepdfs`) 20,771 (2.4%); Somali Alpaca (`somali-dataset`) 37,512
-  (0.7%); Somali TinyStories (`somali-tinystories`) 21,100 (0.3%)
+  (0.7%) — figures from the 2026-09-24 run; current figures are in the 2026-10-19 report
 - `scripts/data/run_all_downloads.sh` (concurrent downloads, one retry, per-source rows and
   bytes) and `scripts/data/run_pipeline_pruned.sh` (stage-by-stage run that deletes each
   superseded intermediate JSONL once the next stage has written its report)
@@ -47,7 +82,46 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   vocabulary-truncation equivalence) plus `pyproject.toml` with ruff and pytest config
 - Technical note: [tokenizer/PAPER.md](tokenizer/PAPER.md)
 
+### Removed
+
+- **QuranEnc and Tanzil** (`quran`, `quran-tanzil`): the terms for redistributing the
+  translations inside a dataset could not be confirmed. Both downloaders, registry entries and
+  merge-order entries are gone; they were 12,845 final records
+- **Somali TinyStories** (`somali-tinystories`): its dataset card carries no license, so there
+  is no clear right to redistribute it. The downloader, registry entry, merge-order entry and
+  download-script wiring are gone. It contributed 21,100 documents (0.3% of tokens)
+
 ### Fixed
+
+- **Malformed tags survived deep clean.** Fragments such as `<span;>` and `<br< span="">` were
+  not matched by the tag pattern. They are now stripped, and the final file has none
+- **Corpus docs claimed NLLB rows carry no language tag.** They carry the detector's guess,
+  and 107,326 final records are tagged with a language other than `so`. The documentation now
+  says so
+- **Deep clean joined words across HTML tags.** Tags were replaced with nothing, so
+  `wanaagsan<br>Dadku` became `wanaagsanDadku`. Block-level tags (`br`, `p`, `div`, `li`, ...)
+  now leave a line break, and self-closing tags such as `<br/>` are matched
+- **OPUS cleanup truncated real text.** It cut everything after the last `<` when a short
+  tail contained `>`, dropping visible text that followed a tag. It now removes only a
+  complete trailing tag
+- **Length floors were not re-checked after deep clean.** Markup and boilerplate removal could
+  leave a record far below the 25-word (documents) or 5-word (sentences) floor. The floor is
+  applied again before language ID
+- **Stale quality flags reached the final output.** `html_remnant`, `mostly_numbers`, and
+  `high_symbol_ratio` set by earlier stages are recomputed from the final text. Records on
+  review fell from 8,678 to 40
+- **Paragraph dedup compared vocabulary, not order.** Different paragraphs with the same words
+  scored 1.0, and two paragraphs without long words both scored 1.0 as empty sets. It now
+  compares word sequences: identical text always matches, and paragraphs of three or more
+  words match on ordered 3-gram Jaccard
+- **A lone carriage return was deleted,** gluing the neighbouring words. It now becomes a line
+  break
+- **Near-dedup was killed by the OOM killer on the 16-source corpus** (18 GB resident). It no
+  longer holds document text in memory: clustering uses only shingles, lengths and ids, and the
+  input is read a second time to write the output. Output is byte-identical to the previous
+  implementation on a 550,000-record sample, with 44% lower peak memory
+- `run_pipeline_pruned.sh` used the BSD-only `stat -f`, so its report-freshness check failed on
+  Linux
 
 - **Tokenizer decode was destroying whitespace.** v1's `BPEDecoder` was configured to strip
   an `</w>` suffix its trainer never emitted, so `decode(encode(x))` concatenated all tokens:
@@ -73,6 +147,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- **Renamed to Somali NLP Corpus** (repository `somali-nlp-corpus`, dataset
+  `somast/somali-nlp-corpus`), formerly SomNLP-Corpus. The new name says what the project is
+  and is the same on GitHub and the Hugging Face Hub. Past changelog entries keep the old name.
+  The `Cargo.toml` repository URL, which pointed at an old organization, now points at
+  `somastllc/somali-nlp-corpus`
 - **Pipeline stages use every core.** `clean`, `lid`, `deep_clean`, and `near_dedup` parse,
   process, and serialize records on a rayon pool in batches, while stats, exact dedup, and
   writes stay sequential in input order. Output is byte-identical to the serial path
@@ -103,10 +182,17 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Known issues
 
-- Somali TinyStories carries no license on its dataset card; recorded as `Other` pending
-  confirmation from the dataset owner.
-- The upstream TinyStories split repeats 20,900 of its 42,000 stories verbatim; merge
-  exact dedup keeps one copy of each.
+- 107,326 final records have a language tag other than `so`, almost all NLLB. The tag is the
+  detector's guess; most of these are short or noisy Somali, but a few thousand with high
+  confidence are junk or foreign text.
+- 28 final records still hold a phone number after a phone keyword that the masking does not
+  cover (12 to 14 digits, such as German mobiles and `00`-prefixed numbers after a dash).
+  Names and other personal details in news text are not masked at all.
+- 40 final records remain on review (`high_symbol_ratio`).
+- The share-alike terms of CC-100, Wikipedia, and FLORES-200 have not had a legal review.
+- The v2 tokenizer was trained on the earlier 11-source corpus and not retrained for the
+  sources added since; FinePDFs (1.4905 tokens/word on the holdout) and Wikipedia (1.4971) cost
+  the most tokens per word.
 
 ### Planned
 

@@ -21,6 +21,8 @@ pub struct DeepCleanConfig {
     #[serde(default = "default_true")]
     pub mask_emails: bool,
     #[serde(default = "default_true")]
+    pub mask_phones: bool,
+    #[serde(default = "default_true")]
     pub boilerplate_line_drop: bool,
     #[serde(default = "default_boilerplate_ratio")]
     pub boilerplate_reject_ratio: f64,
@@ -67,6 +69,7 @@ impl Default for DeepCleanConfig {
             reject_script_html: true,
             mask_urls: true,
             mask_emails: true,
+            mask_phones: true,
             boilerplate_line_drop: true,
             boilerplate_reject_ratio: default_boilerplate_ratio(),
             symbol_ratio_reject: default_symbol_reject(),

@@ -39,15 +39,54 @@ impl SourceEntry {
 
     /// Resolve the license identifier to a [`License`] value.
     pub fn license(&self) -> License {
-        match self.license_id {
-            "CC0-1.0" => License::Cc0_1_0,
-            "CC-BY-4.0" => License::CcBy4_0,
-            "CC-BY-SA-4.0" => License::CcBySa4_0,
-            "MIT" => License::Mit,
-            "Apache-2.0" => License::Apache2_0,
-            "public-domain" => License::PublicDomain,
-            other => License::Other(other.to_string()),
-        }
+        License::from_id(self.license_id)
+    }
+
+    /// License for one record of this source, or `None` when the record must not be
+    /// released. Aggregate sources carry a different upstream license per sub-source,
+    /// and a sub-source we cannot place is excluded rather than guessed.
+    pub fn record_license(&self, subsource: Option<&str>) -> Option<License> {
+        let Some(table) = subsource_table(self.key) else {
+            return Some(self.license());
+        };
+        let subsource = subsource?.to_ascii_lowercase();
+        table
+            .iter()
+            .find(|(name, _)| *name == subsource)
+            .and_then(|(_, license_id)| *license_id)
+            .map(License::from_id)
+    }
+}
+
+/// Glot500 `dataset` values and the upstream license of each, from the Glot500-c
+/// source table (github.com/cisnlp/Glot500). `None` marks sub-sources we exclude:
+/// MTData lists "multiple licenses", Earthlings is GPL-3.0, Bible_crawled has no
+/// license listed, and Bible_pbc is available only on request for academic use.
+/// Wikipedia is recorded as Glot lists it (CC BY-NC-SA 3.0), the conservative reading.
+const GLOT_SUBSOURCES: &[(&str, Option<&str>)] = &[
+    ("afromaft", Some("NCGL-UK-2.0")),
+    ("afriberta", Some("Apache-2.0")),
+    ("leipzig_community", Some("CC-BY-NC-SA-3.0")),
+    ("leipzig_news", Some("CC-BY-NC-SA-3.0")),
+    ("leipzig_newscrawl", Some("CC-BY-NC-SA-3.0")),
+    ("leipzig_wikipedia", Some("CC-BY-NC-SA-3.0")),
+    ("nllb_other_tico", Some("CC0-1.0")),
+    ("nllb_other_hornmt", Some("CC-BY-4.0")),
+    ("flores200", Some("CC-BY-SA-4.0")),
+    ("tatoeba", Some("CC-BY-2.0-FR")),
+    ("wiki", Some("CC-BY-NC-SA-3.0")),
+    ("wikidata", Some("CC0-1.0")),
+    ("mtdata", None),
+    ("earthlings", None),
+    ("bible_crawled", None),
+    ("bible_pbc", None),
+];
+
+/// Per-sub-source license table for sources that aggregate other datasets.
+fn subsource_table(source: &str) -> Option<&'static [(&'static str, Option<&'static str>)]> {
+    match source {
+        "glot" => Some(GLOT_SUBSOURCES),
+        _ => None,
     }
 }
 
@@ -96,13 +135,6 @@ pub const SOURCES: &[SourceEntry] = &[
         license_id: "CC-BY-4.0",
     },
     SourceEntry {
-        key: "quran",
-        class: SourceClass::Sentence,
-        lid_policy: LidPolicy::TagOnly,
-        near_dedup: false,
-        license_id: "Other",
-    },
-    SourceEntry {
         key: "wikipedia",
         class: SourceClass::Document,
         lid_policy: LidPolicy::Gate,
@@ -114,7 +146,7 @@ pub const SOURCES: &[SourceEntry] = &[
         class: SourceClass::Document,
         lid_policy: LidPolicy::Gate,
         near_dedup: true,
-        license_id: "CC-BY-4.0",
+        license_id: "CC-BY-NC-SA-4.0",
     },
     SourceEntry {
         key: "nllb",
@@ -158,27 +190,6 @@ pub const SOURCES: &[SourceEntry] = &[
         near_dedup: true,
         license_id: "MIT",
     },
-    SourceEntry {
-        key: "somali-tinystories",
-        class: SourceClass::Document,
-        lid_policy: LidPolicy::Gate,
-        near_dedup: true,
-        license_id: "Other",
-    },
-    SourceEntry {
-        key: "tanzil",
-        class: SourceClass::Sentence,
-        lid_policy: LidPolicy::TagOnly,
-        near_dedup: false,
-        license_id: "Other",
-    },
-    SourceEntry {
-        key: "quran-tanzil",
-        class: SourceClass::Sentence,
-        lid_policy: LidPolicy::TagOnly,
-        near_dedup: false,
-        license_id: "Other",
-    },
 ];
 
 /// Look up a source entry by its registry key.
@@ -199,7 +210,6 @@ mod tests {
             "madlad",
             "opus",
             "mt560",
-            "quran",
             "wikipedia",
             "xlsum",
             "nllb",
@@ -208,9 +218,6 @@ mod tests {
             "finepdfs",
             "fineweb-2",
             "somali-dataset",
-            "somali-tinystories",
-            "tanzil",
-            "quran-tanzil",
         ] {
             assert!(lookup(key).is_some(), "missing source: {key}");
         }
@@ -227,6 +234,59 @@ mod tests {
     fn document_sources_use_gate_policy() {
         assert_eq!(lookup("hplt").unwrap().lid_policy, LidPolicy::Gate);
         assert!(lookup("hplt").unwrap().near_dedup);
+    }
+
+    #[test]
+    fn xlsum_is_non_commercial_share_alike() {
+        // The XL-Sum card restricts the data to non-commercial research (CC BY-NC-SA 4.0).
+        let license = lookup("xlsum").unwrap().license();
+        assert_eq!(
+            serde_json::to_string(&license).unwrap(),
+            "\"CC-BY-NC-SA-4.0\""
+        );
+    }
+
+    fn glot_license(subsource: Option<&str>) -> Option<String> {
+        lookup("glot")
+            .unwrap()
+            .record_license(subsource)
+            .map(|l| serde_json::to_string(&l).unwrap())
+    }
+
+    #[test]
+    fn glot_records_take_their_sub_source_license() {
+        assert_eq!(
+            glot_license(Some("Afriberta")).as_deref(),
+            Some("\"Apache-2.0\"")
+        );
+        assert_eq!(
+            glot_license(Some("afromaft")).as_deref(),
+            Some("\"NCGL-UK-2.0\"")
+        );
+        assert_eq!(
+            glot_license(Some("Leipzig_news")).as_deref(),
+            Some("\"CC-BY-NC-SA-3.0\"")
+        );
+        assert_eq!(
+            glot_license(Some("Flores200")).as_deref(),
+            Some("\"CC-BY-SA-4.0\"")
+        );
+    }
+
+    #[test]
+    fn glot_excludes_restricted_and_unknown_sub_sources() {
+        for excluded in ["mtdata", "Earthlings", "Bible_crawled", "Bible_pbc"] {
+            assert_eq!(glot_license(Some(excluded)), None, "{excluded}");
+        }
+        assert_eq!(glot_license(Some("some_new_dataset")), None);
+        assert_eq!(glot_license(None), None);
+    }
+
+    #[test]
+    fn other_sources_ignore_the_sub_source() {
+        let hplt = lookup("hplt").unwrap();
+        assert!(hplt.record_license(None).is_some());
+        assert!(hplt.record_license(Some("anything")).is_some());
     }
 
     #[test]

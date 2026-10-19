@@ -16,9 +16,17 @@ pub struct DedupCounters {
     pub cross_source_dups: BTreeMap<String, u64>,
     pub per_source_input: BTreeMap<String, u64>,
     pub per_source_kept: BTreeMap<String, u64>,
+    /// Rows left out because their sub-source license does not allow release,
+    /// keyed `source/subsource`. Not counted as input or dropped.
+    pub policy_excluded: BTreeMap<String, u64>,
 }
 
 impl DedupCounters {
+    pub fn record_policy_excluded(&mut self, source: &str, subsource: Option<&str>) {
+        let key = format!("{source}/{}", subsource.unwrap_or("(none)"));
+        *self.policy_excluded.entry(key).or_insert(0) += 1;
+    }
+
     pub fn record_input(&mut self, source: &str) {
         self.total_input += 1;
         *self.per_source_input.entry(source.to_string()).or_insert(0) += 1;

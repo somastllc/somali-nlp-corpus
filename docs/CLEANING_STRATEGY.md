@@ -417,7 +417,7 @@ Do **not** publish the v0.1 corpus for a pretraining-focused release.
 
 Document: v0.1 vs v0.2 differences, residual noise estimates, per-source licenses ([SOURCES.md](SOURCES.md)), reproduction commands.
 
-Target repo: `goobolabs/SomNLP-Corpus`.
+Target repo: `somastllc/somali-nlp-corpus`.
 
 ---
 

@@ -33,3 +33,6 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Release export (Parquet shards, manifest, checksums)
+/release/

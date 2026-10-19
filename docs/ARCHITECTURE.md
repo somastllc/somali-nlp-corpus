@@ -1,13 +1,13 @@
 # Architecture
 
-How the SomNLP-Corpus workspace is organized today and how data moves through it.
+How the Somali NLP Corpus workspace is organized today and how data moves through it.
 
 ## Workspace overview
 
 The project is a Cargo workspace with three crates:
 
 ```text
-somnlp/
+somali-nlp-corpus/
 ├── Cargo.toml              # workspace manifest and shared dependencies
 ├── configs/
 │   └── pipeline.toml       # Phase 3 pipeline knobs (single source of truth)

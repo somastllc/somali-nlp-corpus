@@ -25,12 +25,38 @@ fn word_count(text: &str) -> usize {
     text.split_whitespace().count()
 }
 
+/// Per-class length floor; deep clean can remove text, so it is checked again here.
+fn min_words_for(source: &str, clean_cfg: &CleanConfig) -> usize {
+    match registry::lookup(source).map(|e| e.class) {
+        Some(SourceClass::Sentence) => clean_cfg.sentence_min_words,
+        _ => clean_cfg.document_min_words,
+    }
+}
+
+/// Flags set by earlier stages on text that deep clean has since rewritten. They are
+/// recomputed from the final text below, so a repaired record is not left on review.
+const RECOMPUTED_FLAGS: [QualityFlag; 3] = [
+    QualityFlag::HighSymbolRatio,
+    QualityFlag::HtmlRemnant,
+    QualityFlag::MostlyNumbers,
+];
+
+fn clear_stale_review(record: &mut CorpusRecord) {
+    record
+        .quality
+        .flags
+        .retain(|f| !RECOMPUTED_FLAGS.contains(f));
+    if record.quality.disposition == RecordDisposition::Review && record.quality.flags.is_empty() {
+        record.quality.disposition = RecordDisposition::Kept;
+    }
+}
+
 fn apply_heuristics_v2(
     record: &mut CorpusRecord,
     text: &str,
     cfg: &DeepCleanConfig,
-    clean_cfg: &CleanConfig,
 ) -> Option<QualityFlag> {
+    clear_stale_review(record);
     let source = record.provenance.source.0.as_str();
     let class = registry::lookup(source)
         .map(|e| e.class)
@@ -68,7 +94,6 @@ fn apply_heuristics_v2(
         }
     }
 
-    let _ = clean_cfg;
     None
 }
 
@@ -125,13 +150,20 @@ pub fn deep_clean_record(
         }
     };
 
-    text = contact::mask_contacts(&text, cfg.mask_urls, cfg.mask_emails);
+    text = contact::mask_contacts(&text, cfg.mask_urls, cfg.mask_emails, cfg.mask_phones);
     text = intra_dedup::dedup_paragraphs(
         &text,
         cfg.intra_dedup.enabled,
         cfg.intra_dedup.paragraph_jaccard_tau,
     );
     text = whitespace::normalize_whitespace(&text);
+
+    if word_count(&text) < min_words_for(&source, clean_cfg) {
+        return DeepCleanResult {
+            record,
+            reject: Some(QualityFlag::TooShort),
+        };
+    }
 
     if let Err(flag) = lid::check_segment_lid(&source, &text, &cfg.lid, detector) {
         return DeepCleanResult {
@@ -145,7 +177,7 @@ pub fn deep_clean_record(
     record.content_hash = hash.clone();
     record.dedup.content_hash = Some(hash);
 
-    if let Some(flag) = apply_heuristics_v2(&mut record, &text, cfg, clean_cfg) {
+    if let Some(flag) = apply_heuristics_v2(&mut record, &text, cfg) {
         return DeepCleanResult {
             record,
             reject: Some(flag),
@@ -216,9 +248,47 @@ mod tests {
         let (mut dc, clean) = configs();
         dc.lid.segment_level = false;
         let detector = LinguaDetector::new();
-        let text = "Soomaaliya waa dal wanaagsan oo leh taariikh dheer.\nline1\\nline2";
+        let text = "Soomaaliya waa dal wanaagsan oo leh taariikh dheer iyo dad badan oo ku nool xeebaha iyo \
+                    gudaha dalka, waxayna leeyihiin luuqad iyo dhaqan midaysan oo hodan ah.\nline1\\nline2";
         let result = deep_clean_record(sample_record("madlad", text), &dc, &clean, &detector);
         assert!(result.reject.is_none(), "{:?}", result.record.quality.flags);
         assert!(result.record.text.contains('\n'));
+    }
+
+    #[test]
+    fn rejects_text_shortened_below_floor_by_markup_removal() {
+        let (dc, clean) = configs();
+        let detector = LinguaDetector::new();
+        let text = "Soomaaliya <p> <br> <div> <span> <b> <i>";
+        let result = deep_clean_record(sample_record("opus", text), &dc, &clean, &detector);
+        assert_eq!(result.reject, Some(QualityFlag::TooShort));
+    }
+
+    #[test]
+    fn html_break_keeps_words_apart() {
+        let (mut dc, clean) = configs();
+        dc.lid.segment_level = false;
+        let detector = LinguaDetector::new();
+        let text = "Dadku waa wanaagsan yihiin<br>Soomaaliya waa dal wanaagsan";
+        let result = deep_clean_record(sample_record("opus", text), &dc, &clean, &detector);
+        assert!(result.reject.is_none(), "{:?}", result.reject);
+        assert!(!result.record.text.contains("yihiinSoomaaliya"));
+    }
+
+    #[test]
+    fn stale_review_flag_is_cleared_when_text_is_clean() {
+        let (mut dc, clean) = configs();
+        dc.lid.segment_level = false;
+        let detector = LinguaDetector::new();
+        let mut record = sample_record(
+            "opus",
+            "Soomaaliya waa dal wanaagsan oo leh taariikh dheer.",
+        );
+        record.quality.disposition = RecordDisposition::Review;
+        record.quality.flags.push(QualityFlag::HtmlRemnant);
+        let result = deep_clean_record(record, &dc, &clean, &detector);
+        assert!(result.reject.is_none());
+        assert_eq!(result.record.quality.disposition, RecordDisposition::Kept);
+        assert!(result.record.quality.flags.is_empty());
     }
 }

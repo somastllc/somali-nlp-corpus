@@ -3,10 +3,10 @@ members = ["crates/common", "crates/corpus-tools", "crates/corpus-pipeline"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
-authors = ["SomNLP Contributors"]
-repository = "https://github.com/dugsiiye-labs/SomNLP-Corpus"
+authors = ["Somali NLP Corpus Contributors"]
+repository = "https://github.com/somastllc/somali-nlp-corpus"
 
 [workspace.dependencies]
 # Serialization

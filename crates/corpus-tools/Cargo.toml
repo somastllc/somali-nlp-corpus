@@ -35,10 +35,6 @@ name = "download_mt560_so"
 path = "src/bin/download_mt560_so.rs"
 
 [[bin]]
-name = "download_quran_so"
-path = "src/bin/download_quran_so.rs"
-
-[[bin]]
 name = "merge_corpora"
 path = "src/bin/merge_corpora.rs"
 
@@ -51,20 +47,12 @@ name = "download_xlsum_so"
 path = "src/bin/download_xlsum_so.rs"
 
 [[bin]]
-name = "download_quran_tanzil"
-path = "src/bin/download_quran_tanzil.rs"
-
-[[bin]]
 name = "download_nllb_so"
 path = "src/bin/download_nllb_so.rs"
 
 [[bin]]
 name = "download_glot_so"
 path = "src/bin/download_glot_so.rs"
-
-[[bin]]
-name = "download_somali_tinystories_so"
-path = "src/bin/download_somali_tinystories_so.rs"
 
 [[bin]]
 name = "download_somali_web_corpus_so"

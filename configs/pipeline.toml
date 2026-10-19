@@ -1,4 +1,4 @@
-# SomNLP-Corpus Phase 3 pipeline config — single source of truth for all knobs.
+# Somali NLP Corpus Phase 3 pipeline config — single source of truth for all knobs.
 # See docs/CLEANING_PLAN.md. Changed knobs should be recorded in the changelog.
 
 version = "1"
@@ -12,8 +12,6 @@ merge_source_order = [
   "mc4",
   "madlad",
   "hplt",
-  "quran-tanzil",
-  "quran",
   "wikipedia",
   "xlsum",
   "somali-web-corpus",
@@ -24,7 +22,6 @@ merge_source_order = [
   "finepdfs",
   "fineweb-2",
   "somali-dataset",
-  "somali-tinystories",
 ]
 
 [clean]
@@ -65,6 +62,7 @@ strip_benign_html = true
 reject_script_html = true
 mask_urls = true
 mask_emails = true
+mask_phones = true
 boilerplate_line_drop = true
 boilerplate_reject_ratio = 0.40
 symbol_ratio_reject = 0.45

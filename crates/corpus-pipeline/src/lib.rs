@@ -1,4 +1,4 @@
-//! SomNLP-Corpus processing pipeline: clean, language identification, and
+//! Somali NLP Corpus processing pipeline: clean, language identification, and
 //! near-deduplication stages. See docs/CLEANING_PLAN.md.
 
 pub mod clean;

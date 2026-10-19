@@ -9,7 +9,7 @@ use tempfile::NamedTempFile;
 
 use crate::hf::{HfClient, PARQUET_REVISION};
 use crate::jsonl::{is_non_empty, JsonlWriter};
-use crate::parquet_source::iter_text_column;
+use crate::parquet_source::iter_text_with_label;
 
 pub const SOURCE_TAG: &str = "glot";
 pub const DATASET_NAME: &str = "cis-lmu/Glot500";
@@ -45,15 +45,17 @@ pub fn download_glot(
 
         let local_path = resolve_shard(&hf, remote_path, output, streaming, &mut temps)?;
 
-        for text in iter_text_column(&local_path, "text")? {
+        // `dataset` names the upstream corpus of each row. Its license differs per row, so
+        // it is kept as the record's sub-source.
+        for row in iter_text_with_label(&local_path, "text", "dataset")? {
             if limit.is_some_and(|limit| written >= limit) {
                 break;
             }
-            let text = text?;
+            let (text, dataset) = row?;
             if !is_non_empty(&text) {
                 continue;
             }
-            writer.write_text(&text)?;
+            writer.write_text_subsource(&text, &dataset)?;
             written += 1;
         }
     }

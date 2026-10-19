@@ -57,6 +57,36 @@ impl JsonlWriter {
         Ok(())
     }
 
+    /// Write a merged record: text, source key, and the sub-source when the source
+    /// aggregates other datasets (e.g. Glot500).
+    pub fn write_record(
+        &mut self,
+        source: &str,
+        subsource: Option<&str>,
+        text: &str,
+    ) -> Result<()> {
+        let mut value = json!({ "text": text, "source": source });
+        if let Some(subsource) = subsource {
+            value["subsource"] = json!(subsource);
+        }
+        let line = serde_json::to_string(&value)?;
+        self.writer.write_all(line.as_bytes())?;
+        self.writer.write_all(b"\n")?;
+        self.stats.record_source(source, text);
+        self.progress.inc(1);
+        Ok(())
+    }
+
+    /// Write a downloaded row with the name of the upstream dataset it came from.
+    pub fn write_text_subsource(&mut self, text: &str, subsource: &str) -> Result<()> {
+        let line = serde_json::to_string(&json!({ "text": text, "subsource": subsource }))?;
+        self.writer.write_all(line.as_bytes())?;
+        self.writer.write_all(b"\n")?;
+        self.stats.record(text);
+        self.progress.inc(1);
+        Ok(())
+    }
+
     pub fn write_tagged(&mut self, text: &str, source: &str) -> Result<()> {
         self.write_text_source(source, text)
     }
@@ -154,7 +184,18 @@ pub fn write_texts(output: &Path, texts: &[String], limit: Option<u64>) -> Resul
     Ok(stats)
 }
 
+/// One non-empty raw row: its text and, for aggregate sources, the upstream dataset.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RawRow {
+    pub text: String,
+    pub subsource: Option<String>,
+}
+
 pub fn read_jsonl_texts(path: &Path) -> Result<impl Iterator<Item = Result<String>> + '_> {
+    Ok(read_jsonl_rows(path)?.map(|row| row.map(|row| row.text)))
+}
+
+pub fn read_jsonl_rows(path: &Path) -> Result<impl Iterator<Item = Result<RawRow>> + '_> {
     use std::io::{BufRead, BufReader};
 
     let file = File::open(path).with_context(|| format!("opening {}", path.display()))?;
@@ -169,20 +210,20 @@ pub fn read_jsonl_texts(path: &Path) -> Result<impl Iterator<Item = Result<Strin
                 if raw.is_empty() {
                     return None;
                 }
-                let text = match parse_jsonl_text(raw, path, index + 1) {
-                    Ok(text) => text,
+                let row = match parse_jsonl_row(raw, path, index + 1) {
+                    Ok(row) => row,
                     Err(_) => return None,
                 };
-                if text.is_empty() {
+                if row.text.is_empty() {
                     return None;
                 }
-                Some(Ok(text))
+                Some(Ok(row))
             }
             Err(error) => Some(Err(error.into())),
         }))
 }
 
-fn parse_jsonl_text(line: &str, path: &Path, line_number: usize) -> Result<String> {
+fn parse_jsonl_row(line: &str, path: &Path, line_number: usize) -> Result<RawRow> {
     let value: serde_json::Value = serde_json::from_str(line)
         .with_context(|| format!("invalid JSON on line {line_number} of {}", path.display()))?;
     let text = value
@@ -191,5 +232,44 @@ fn parse_jsonl_text(line: &str, path: &Path, line_number: usize) -> Result<Strin
         .unwrap_or_default()
         .trim()
         .to_string();
-    Ok(text)
+    let subsource = value
+        .get("subsource")
+        .and_then(|value| value.as_str())
+        .map(str::to_string);
+    Ok(RawRow { text, subsource })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rows_round_trip_with_and_without_sub_source() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("rows.jsonl");
+        let mut writer = JsonlWriter::create(&path, "test").unwrap();
+        writer
+            .write_record("glot", Some("Afriberta"), "alpha beta")
+            .unwrap();
+        writer.write_record("hplt", None, "gamma delta").unwrap();
+        writer.finish();
+
+        let rows: Vec<RawRow> = read_jsonl_rows(&path)
+            .unwrap()
+            .collect::<Result<_>>()
+            .unwrap();
+        assert_eq!(
+            rows,
+            vec![
+                RawRow {
+                    text: "alpha beta".into(),
+                    subsource: Some("Afriberta".into())
+                },
+                RawRow {
+                    text: "gamma delta".into(),
+                    subsource: None
+                },
+            ]
+        );
+    }
 }

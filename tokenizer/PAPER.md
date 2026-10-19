@@ -1,12 +1,19 @@
 # Optimizing Tokenization Efficiency for the Somali Language Using BPE
 
-**SomNLP-Corpus Tokenizer Research Note**
+**Somali NLP Corpus Tokenizer Research Note**
+
+> **Scope of the figures.** The tables below were scored on the 2026-09-24 seventeen-source
+> corpus, which still contained Somali TinyStories, QuranEnc and Tanzil. Release 1.0.0 ships
+> fourteen sources without them. Re-scored on the 1.0.0 holdout (63,542 documents), v2 measures
+> 1.3440 mean tokens/word against 1.3830 for v1, 1.8100 for XLM-RoBERTa-base, and 2.6344 for
+> BERT-base (`benchmark_results.json`). The 1.0.0 full-corpus token total (1,129,084,663;
+> 1.3653 tokens/word) is in `corpus_token_stats.json`.
 
 ---
 
 ## Abstract
 
-This document describes the design, training procedure, and measured efficiency of corpus-native Byte Pair Encoding tokenizers for the Somali language (`so`), measured on the SomNLP-Corpus seventeen-source Track A release (7,981,982 documents, 832,264,349 words, 2026-09-24). Standard English-centric and general multilingual subword models impose substantial *token-per-word inflation* on Somali text because their merge inventories were optimized for typologically and orthographically distant languages.
+This document describes the design, training procedure, and measured efficiency of corpus-native Byte Pair Encoding tokenizers for the Somali language (`so`), measured on the Somali NLP Corpus seventeen-source Track A release (7,981,982 documents, 832,264,349 words, 2026-09-24). Standard English-centric and general multilingual subword models impose substantial *token-per-word inflation* on Somali text because their merge inventories were optimized for typologically and orthographically distant languages.
 
 Two models are documented. **v1** (32,000 types, whitespace pre-tokenization) was the initial release; it is retained unchanged for reproducibility but is unsuitable for generative use, because its decoder was configured for an end-of-word suffix the trainer never emitted and therefore fails to reconstruct whitespace on **every** document tested, and because out-of-alphabet characters collapse to an unknown token. **v2** (48,000 types, ByteLevel pre-tokenization and decoding) is the shipped model. It reconstructs its input exactly, cannot emit an unknown token because all 256 bytes seed the alphabet, and is nonetheless *more* efficient than v1: mean 1.3444 tokens per word against 1.3834 on a held-out split of 64,041 documents, versus 2.6349 for BERT-base and 1.8105 for XLM-RoBERTa-base on identical text.
 
@@ -22,7 +29,7 @@ For **Garaad Gacmeed** (Artificial Intelligence) applications in Somali, this in
 
 Subword fragmentation also interacts with model quality. Rare merges force characters or short fragments into the unknown-token bucket, increase sequence length variance across domains, and amplify exposure bias during autoregressive decoding. For low-resource language technology programs, tokenizer design is therefore a co-equal decision with architecture and data curation: it defines the atomic units of prediction.
 
-The SomNLP-Corpus project addresses data quality through a six-stage Rust pipeline (merge, clean, language identification, deep clean, near deduplication, and final release). The present work closes the loop by deriving a tokenizer from the same release artifact used for language-model pretraining, ensuring consistency between training text normalization and subword statistics.
+The Somali NLP Corpus project addresses data quality through a six-stage Rust pipeline (merge, clean, language identification, deep clean, near deduplication, and final release). The present work closes the loop by deriving a tokenizer from the same release artifact used for language-model pretraining, ensuring consistency between training text normalization and subword statistics.
 
 ---
 
@@ -376,7 +383,7 @@ training file existed, and would silently retrain on a months-old corpus. Overri
 
 ## 8. Conclusion
 
-Training BPE on the SomNLP-Corpus final release aligns subword statistics with attested Somali morphology and orthography, addressing a structural bottleneck for Garaad Gacmeed systems deployed on transformer architectures. By reducing token-per-word inflation relative to English and multilingual off-the-shelf tokenizers, a native model increases usable context, improves training data efficiency, and lowers inference cost at fixed linguistic content. The pipeline implemented in `tokenizer/` is modular, streaming, and reproducible, and is covered by a property test suite asserting the two invariants a decoder LM depends on: that decoding inverts encoding exactly, and that no input can fall back to an unknown token. v1 remains in the repository unchanged so its published figures stay reproducible; v2 supersedes it for any generative use.
+Training BPE on the Somali NLP Corpus final release aligns subword statistics with attested Somali morphology and orthography, addressing a structural bottleneck for Garaad Gacmeed systems deployed on transformer architectures. By reducing token-per-word inflation relative to English and multilingual off-the-shelf tokenizers, a native model increases usable context, improves training data efficiency, and lowers inference cost at fixed linguistic content. The pipeline implemented in `tokenizer/` is modular, streaming, and reproducible, and is covered by a property test suite asserting the two invariants a decoder LM depends on: that decoding inverts encoding exactly, and that no input can fall back to an unknown token. v1 remains in the repository unchanged so its published figures stay reproducible; v2 supersedes it for any generative use.
 
 ---
 
@@ -384,7 +391,7 @@ Training BPE on the SomNLP-Corpus final release aligns subword statistics with a
 
 - Sennrich, R., Haddow, B., & Birch, A. (2016). *Neural Machine Translation of Rare Words with Subword Units.* ACL.
 - Hugging Face. *Tokenizers Library Documentation.* https://huggingface.co/docs/tokenizers
-- SomNLP-Corpus Project. *README.md*, *CLEANING_STRATEGY.md*, *DATA_PIPELINE.md.*
+- Somali NLP Corpus Project. *README.md*, *CLEANING_STRATEGY.md*, *DATA_PIPELINE.md.*
 - Devlin, J., et al. (2019). *BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.* NAACL.
 - Conneau, A., et al. (2020). *Unsupervised Cross-lingual Representation Learning at Scale.* ACL (XLM-R).
 

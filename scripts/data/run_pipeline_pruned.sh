@@ -24,7 +24,7 @@ for i in "${!stages[@]}"; do
     echo "[$(date '+%F %T')] Pipeline FAILED at $stage; nothing deleted for this stage" >> "$LOG"
     exit $rc
   fi
-  if [ ! -s "$report" ] || [ "$(stat -f %m "$report")" -lt "$started" ]; then
+  if [ ! -s "$report" ] || [ "$(stat -c %Y "$report" 2>/dev/null || stat -f %m "$report")" -lt "$started" ]; then
     echo "[$(date '+%F %T')] Pipeline FAILED: $report missing or not regenerated" >> "$LOG"
     exit 1
   fi

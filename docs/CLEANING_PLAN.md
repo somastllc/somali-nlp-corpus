@@ -1,6 +1,6 @@
 # Phase 3 Processing Plan
 
-The authoritative specification for the SomNLP-Corpus processing pipeline: merge,
+The authoritative specification for the Somali NLP Corpus processing pipeline: merge,
 clean, language identification, and near-deduplication. Decisions here are locked
 after senior review. Implementation must follow this document; where it disagrees
 with the Rust types in `crates/common/src/types.rs`, the types win and this doc is

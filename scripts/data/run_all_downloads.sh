@@ -11,11 +11,8 @@ mkdir -p reports/download_logs
 
 outdir() {
   case "$1" in
-    download_quran_so) echo data/raw/quran ;;
-    download_quran_tanzil) echo data/raw/quran-tanzil ;;
     download_somali_web_corpus_so) echo data/raw/somali-web-corpus ;;
     download_somali_dataset_so) echo data/raw/somali-dataset ;;
-    download_somali_tinystories_so) echo data/raw/somali-tinystories ;;
     download_fineweb2_so) echo data/raw/fineweb-2 ;;
     *) local s=${1#download_}; echo "data/raw/${s%_so}" ;;
   esac

@@ -1,12 +1,12 @@
 {
-  "input": "/Users/mohamudosman/Documents/SomNLP-Corpus/data/final/final_so.jsonl",
-  "train_output": "/Users/mohamudosman/Documents/SomNLP-Corpus/tokenizer/somali_raw_corpus.txt",
-  "eval_output": "/Users/mohamudosman/Documents/SomNLP-Corpus/tokenizer/eval_holdout.jsonl",
+  "input": "/home/sharafdin/Documents/Goobo-Labs/SomNLP-Corpus/data/final/final_so.jsonl",
+  "train_output": "/home/sharafdin/Documents/Goobo-Labs/SomNLP-Corpus/tokenizer/somali_raw_corpus.txt",
+  "eval_output": "/home/sharafdin/Documents/Goobo-Labs/SomNLP-Corpus/tokenizer/eval_holdout.jsonl",
   "corpus_fingerprint": {
-    "path": "/Users/mohamudosman/Documents/SomNLP-Corpus/data/final/final_so.jsonl",
-    "size_bytes": 9070671037,
-    "mtime_ns": 1790204799825217604,
-    "edge_sha256": "8e25a8c96dac4f266f12d7b2e66dc764971b456075e986a046615b403ab99f00"
+    "path": "/home/sharafdin/Documents/Goobo-Labs/SomNLP-Corpus/data/final/final_so.jsonl",
+    "size_bytes": 9070052487,
+    "mtime_ns": 1792434410919856817,
+    "edge_sha256": "30858aa20fab193299a358a22c6f7934f84b36b3d84710eb472569b9da9953f2"
   },
   "eval_split": {
     "modulus": 1000,
@@ -14,329 +14,275 @@
     "hash": "blake2b-8(id)",
     "enabled": true
   },
-  "documents": 7981976,
-  "words": 832264349,
+  "documents": 7913008,
+  "words": 826973689,
   "train": {
-    "documents": 7917935,
-    "words": 825531863,
-    "characters": 5438725220,
-    "multiline_documents": 1894356,
+    "documents": 7849466,
+    "words": 820271415,
+    "characters": 5405118826,
+    "multiline_documents": 1873290,
     "by_source": {
       "mc4": {
-        "documents": 581611,
-        "document_share": 0.073455,
-        "words": 212281818,
-        "word_share": 0.257146,
-        "characters": 1418740312,
-        "words_per_document": 364.99,
-        "multiline_documents": 579117
+        "documents": 581458,
+        "document_share": 0.074076,
+        "words": 212274919,
+        "word_share": 0.258786,
+        "characters": 1418788410,
+        "words_per_document": 365.07,
+        "multiline_documents": 578952
       },
       "hplt": {
-        "documents": 550451,
-        "document_share": 0.06952,
-        "words": 183155601,
-        "word_share": 0.221864,
-        "characters": 1206859670,
+        "documents": 550528,
+        "document_share": 0.070136,
+        "words": 183184204,
+        "word_share": 0.223321,
+        "characters": 1207028698,
         "words_per_document": 332.74,
-        "multiline_documents": 547202
+        "multiline_documents": 547266
       },
       "fineweb-2": {
-        "documents": 585006,
-        "document_share": 0.073884,
-        "words": 155760016,
-        "word_share": 0.188678,
-        "characters": 1028967235,
-        "words_per_document": 266.25,
-        "multiline_documents": 557214
+        "documents": 585068,
+        "document_share": 0.074536,
+        "words": 155743118,
+        "word_share": 0.189868,
+        "characters": 1028846331,
+        "words_per_document": 266.2,
+        "multiline_documents": 557185
       },
       "glot": {
-        "documents": 1420654,
-        "document_share": 0.179422,
-        "words": 66384509,
-        "word_share": 0.080414,
-        "characters": 435753262,
-        "words_per_document": 46.73,
-        "multiline_documents": 0
+        "documents": 1343760,
+        "document_share": 0.171191,
+        "words": 63091814,
+        "word_share": 0.076916,
+        "characters": 414289747,
+        "words_per_document": 46.95,
+        "multiline_documents": 34
       },
       "nllb": {
-        "documents": 4075196,
-        "document_share": 0.514679,
-        "words": 61571557,
-        "word_share": 0.074584,
-        "characters": 393696098,
-        "words_per_document": 15.11,
-        "multiline_documents": 0
+        "documents": 4117649,
+        "document_share": 0.524577,
+        "words": 62251064,
+        "word_share": 0.075891,
+        "characters": 398042420,
+        "words_per_document": 15.12,
+        "multiline_documents": 132
       },
       "madlad": {
-        "documents": 127690,
-        "document_share": 0.016127,
-        "words": 61353448,
-        "word_share": 0.07432,
-        "characters": 400735291,
-        "words_per_document": 480.49,
-        "multiline_documents": 127646
+        "documents": 127665,
+        "document_share": 0.016264,
+        "words": 61353636,
+        "word_share": 0.074797,
+        "characters": 400745938,
+        "words_per_document": 480.58,
+        "multiline_documents": 127621
       },
       "cc100": {
-        "documents": 293794,
-        "document_share": 0.037105,
-        "words": 48895179,
-        "word_share": 0.059229,
-        "characters": 317499904,
-        "words_per_document": 166.43,
-        "multiline_documents": 0
+        "documents": 293860,
+        "document_share": 0.037437,
+        "words": 48898001,
+        "word_share": 0.059612,
+        "characters": 317515916,
+        "words_per_document": 166.4,
+        "multiline_documents": 11
       },
       "finepdfs": {
-        "documents": 20619,
-        "document_share": 0.002604,
-        "words": 18486739,
-        "word_share": 0.022394,
-        "characters": 123880896,
-        "words_per_document": 896.59,
-        "multiline_documents": 20579
+        "documents": 20598,
+        "document_share": 0.002624,
+        "words": 18487578,
+        "word_share": 0.022538,
+        "characters": 123889150,
+        "words_per_document": 897.54,
+        "multiline_documents": 20559
       },
       "somali-dataset": {
-        "documents": 37244,
-        "document_share": 0.004704,
-        "words": 5740735,
-        "word_share": 0.006954,
-        "characters": 37253894,
-        "words_per_document": 154.14,
-        "multiline_documents": 37212
+        "documents": 36995,
+        "document_share": 0.004713,
+        "words": 5737434,
+        "word_share": 0.006995,
+        "characters": 37232338,
+        "words_per_document": 155.09,
+        "multiline_documents": 36964
       },
       "somali-web-corpus": {
-        "documents": 120842,
-        "document_share": 0.015262,
-        "words": 4854113,
-        "word_share": 0.00588,
-        "characters": 30913195,
+        "documents": 120870,
+        "document_share": 0.015398,
+        "words": 4855248,
+        "word_share": 0.005919,
+        "characters": 30920596,
         "words_per_document": 40.17,
         "multiline_documents": 0
       },
-      "somali-tinystories": {
-        "documents": 20955,
-        "document_share": 0.002647,
-        "words": 2380358,
-        "word_share": 0.002883,
-        "characters": 14821723,
-        "words_per_document": 113.59,
-        "multiline_documents": 20719
-      },
       "xlsum": {
         "documents": 4987,
-        "document_share": 0.00063,
+        "document_share": 0.000635,
         "words": 1746803,
-        "word_share": 0.002116,
+        "word_share": 0.00213,
         "characters": 11346872,
         "words_per_document": 350.27,
         "multiline_documents": 0
       },
       "mt560": {
         "documents": 48811,
-        "document_share": 0.006165,
+        "document_share": 0.006218,
         "words": 1153705,
-        "word_share": 0.001398,
+        "word_share": 0.001406,
         "characters": 6714649,
         "words_per_document": 23.64,
         "multiline_documents": 0
       },
       "wikipedia": {
-        "documents": 5299,
-        "document_share": 0.000669,
-        "words": 1124309,
-        "word_share": 0.001362,
-        "characters": 7468590,
-        "words_per_document": 212.17,
-        "multiline_documents": 4667
+        "documents": 5181,
+        "document_share": 0.00066,
+        "words": 1114929,
+        "word_share": 0.001359,
+        "characters": 7405851,
+        "words_per_document": 215.2,
+        "multiline_documents": 4566
       },
       "opus": {
         "documents": 12036,
-        "document_share": 0.00152,
-        "words": 378952,
-        "word_share": 0.000459,
-        "characters": 2351675,
-        "words_per_document": 31.48,
-        "multiline_documents": 0
-      },
-      "quran": {
-        "documents": 7018,
-        "document_share": 0.000886,
-        "words": 158794,
-        "word_share": 0.000192,
-        "characters": 1020870,
-        "words_per_document": 22.63,
-        "multiline_documents": 0
-      },
-      "quran-tanzil": {
-        "documents": 5722,
-        "document_share": 0.000723,
-        "words": 105227,
-        "word_share": 0.000127,
-        "characters": 701084,
-        "words_per_document": 18.39,
+        "document_share": 0.001533,
+        "words": 378962,
+        "word_share": 0.000462,
+        "characters": 2351910,
+        "words_per_document": 31.49,
         "multiline_documents": 0
       }
     }
   },
   "eval": {
-    "documents": 64041,
-    "words": 6732486,
-    "characters": 44336497,
-    "multiline_documents": 15167,
+    "documents": 63542,
+    "words": 6702274,
+    "characters": 44131443,
+    "multiline_documents": 15053,
     "by_source": {
       "mc4": {
-        "documents": 4654,
-        "document_share": 0.072672,
-        "words": 1753768,
-        "word_share": 0.260493,
-        "characters": 11706313,
-        "words_per_document": 376.83,
-        "multiline_documents": 4627
+        "documents": 4652,
+        "document_share": 0.073211,
+        "words": 1758603,
+        "word_share": 0.262389,
+        "characters": 11733171,
+        "words_per_document": 378.03,
+        "multiline_documents": 4625
       },
       "hplt": {
-        "documents": 4400,
-        "document_share": 0.068706,
-        "words": 1545102,
-        "word_share": 0.229499,
-        "characters": 10161889,
-        "words_per_document": 351.16,
-        "multiline_documents": 4368
+        "documents": 4401,
+        "document_share": 0.069261,
+        "words": 1545142,
+        "word_share": 0.23054,
+        "characters": 10162178,
+        "words_per_document": 351.09,
+        "multiline_documents": 4369
       },
       "fineweb-2": {
-        "documents": 4818,
-        "document_share": 0.075233,
-        "words": 1235270,
-        "word_share": 0.183479,
-        "characters": 8151779,
-        "words_per_document": 256.39,
-        "multiline_documents": 4564
+        "documents": 4820,
+        "document_share": 0.075855,
+        "words": 1235477,
+        "word_share": 0.184337,
+        "characters": 8153139,
+        "words_per_document": 256.32,
+        "multiline_documents": 4567
       },
       "glot": {
-        "documents": 11623,
-        "document_share": 0.181493,
-        "words": 552698,
-        "word_share": 0.082094,
-        "characters": 3630693,
-        "words_per_document": 47.55,
+        "documents": 10991,
+        "document_share": 0.172972,
+        "words": 525492,
+        "word_share": 0.078405,
+        "characters": 3452770,
+        "words_per_document": 47.81,
         "multiline_documents": 0
       },
       "nllb": {
-        "documents": 33031,
-        "document_share": 0.515779,
-        "words": 500866,
-        "word_share": 0.074395,
-        "characters": 3202406,
-        "words_per_document": 15.16,
-        "multiline_documents": 0
+        "documents": 33385,
+        "document_share": 0.525401,
+        "words": 506759,
+        "word_share": 0.07561,
+        "characters": 3240033,
+        "words_per_document": 15.18,
+        "multiline_documents": 1
       },
       "madlad": {
-        "documents": 1010,
-        "document_share": 0.015771,
-        "words": 478228,
-        "word_share": 0.071033,
-        "characters": 3138847,
-        "words_per_document": 473.49,
-        "multiline_documents": 1010
+        "documents": 1043,
+        "document_share": 0.016414,
+        "words": 483911,
+        "word_share": 0.072201,
+        "characters": 3168872,
+        "words_per_document": 463.96,
+        "multiline_documents": 1043
       },
       "cc100": {
-        "documents": 2360,
-        "document_share": 0.036851,
-        "words": 401839,
-        "word_share": 0.059687,
-        "characters": 2606576,
-        "words_per_document": 170.27,
+        "documents": 2361,
+        "document_share": 0.037157,
+        "words": 401862,
+        "word_share": 0.059959,
+        "characters": 2606711,
+        "words_per_document": 170.21,
         "multiline_documents": 0
       },
       "finepdfs": {
         "documents": 152,
-        "document_share": 0.002373,
-        "words": 139081,
-        "word_share": 0.020658,
-        "characters": 937636,
-        "words_per_document": 915.01,
+        "document_share": 0.002392,
+        "words": 139086,
+        "word_share": 0.020752,
+        "characters": 937710,
+        "words_per_document": 915.04,
         "multiline_documents": 151
       },
       "somali-dataset": {
         "documents": 268,
-        "document_share": 0.004185,
+        "document_share": 0.004218,
         "words": 40488,
-        "word_share": 0.006014,
+        "word_share": 0.006041,
         "characters": 261779,
         "words_per_document": 151.07,
         "multiline_documents": 268
       },
       "somali-web-corpus": {
         "documents": 922,
-        "document_share": 0.014397,
+        "document_share": 0.01451,
         "words": 36450,
-        "word_share": 0.005414,
+        "word_share": 0.005438,
         "characters": 232806,
         "words_per_document": 39.53,
         "multiline_documents": 0
       },
-      "somali-tinystories": {
-        "documents": 145,
-        "document_share": 0.002264,
-        "words": 16537,
-        "word_share": 0.002456,
-        "characters": 102820,
-        "words_per_document": 114.05,
-        "multiline_documents": 145
-      },
       "xlsum": {
         "documents": 40,
-        "document_share": 0.000625,
+        "document_share": 0.00063,
         "words": 12004,
-        "word_share": 0.001783,
+        "word_share": 0.001791,
         "characters": 78439,
         "words_per_document": 300.1,
         "multiline_documents": 0
       },
       "mt560": {
         "documents": 384,
-        "document_share": 0.005996,
+        "document_share": 0.006043,
         "words": 9040,
-        "word_share": 0.001343,
+        "word_share": 0.001349,
         "characters": 52751,
         "words_per_document": 23.54,
         "multiline_documents": 0
       },
       "wikipedia": {
-        "documents": 39,
-        "document_share": 0.000609,
-        "words": 6022,
-        "word_share": 0.000894,
-        "characters": 39579,
-        "words_per_document": 154.41,
-        "multiline_documents": 34
+        "documents": 34,
+        "document_share": 0.000535,
+        "words": 5202,
+        "word_share": 0.000776,
+        "characters": 34201,
+        "words_per_document": 153.0,
+        "multiline_documents": 29
       },
       "opus": {
-        "documents": 90,
-        "document_share": 0.001405,
-        "words": 2764,
-        "word_share": 0.000411,
-        "characters": 16928,
-        "words_per_document": 30.71,
-        "multiline_documents": 0
-      },
-      "quran": {
-        "documents": 54,
-        "document_share": 0.000843,
-        "words": 1274,
-        "word_share": 0.000189,
-        "characters": 8258,
-        "words_per_document": 23.59,
-        "multiline_documents": 0
-      },
-      "quran-tanzil": {
-        "documents": 51,
-        "document_share": 0.000796,
-        "words": 1055,
-        "word_share": 0.000157,
-        "characters": 6998,
-        "words_per_document": 20.69,
+        "documents": 89,
+        "document_share": 0.001401,
+        "words": 2758,
+        "word_share": 0.000412,
+        "characters": 16883,
+        "words_per_document": 30.99,
         "multiline_documents": 0
       }
     }
   },
-  "elapsed_seconds": 115.63
+  "elapsed_seconds": 169.36
 }

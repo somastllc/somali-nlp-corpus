@@ -50,6 +50,12 @@ pub fn clean_record(
         return CleanResult::Skipped;
     };
 
+    // Aggregate sources carry a different upstream license per sub-source; a row we
+    // cannot place is not released.
+    let Some(license) = entry.record_license(raw.subsource.as_deref()) else {
+        return CleanResult::Skipped;
+    };
+
     let cleaned = clean_text(&raw.text, cfg.max_repeated_run);
     let min_words = match entry.class {
         SourceClass::Document => cfg.document_min_words,
@@ -71,9 +77,9 @@ pub fn clean_record(
             author: None,
             published_at: None,
             tags: Vec::new(),
-            subsource: None,
+            subsource: raw.subsource.clone(),
         },
-        license: entry.license(),
+        license,
         content_hash: hash.clone(),
         dedup: DedupInfo {
             content_hash: Some(hash),
@@ -128,6 +134,7 @@ mod tests {
     #[test]
     fn short_document_is_rejected() {
         let raw = RawRecord {
+            subsource: None,
             text: "Soomaaliya waa dal.".into(),
             source: Some("hplt".into()),
         };
@@ -141,6 +148,7 @@ mod tests {
     #[test]
     fn short_sentence_source_is_kept() {
         let raw = RawRecord {
+            subsource: None,
             text: "Soomaaliya waa dal wanaagsan oo qurux badan.".into(),
             source: Some("opus".into()),
         };
@@ -155,6 +163,7 @@ mod tests {
     #[test]
     fn unknown_source_is_skipped() {
         let raw = RawRecord {
+            subsource: None,
             text: "text".into(),
             source: Some("oscar".into()),
         };
@@ -162,5 +171,52 @@ mod tests {
             clean_record(&raw, &cfg(), Utc::now()),
             CleanResult::Skipped
         ));
+    }
+
+    fn glot_raw(subsource: Option<&str>) -> RawRecord {
+        RawRecord {
+            subsource: subsource.map(str::to_string),
+            text: "Soomaaliya waa dal wanaagsan oo leh taariikh dheer iyo dad badan oo ku nool xeebaha \
+                   iyo gudaha dalka, waxayna leeyihiin luuqad iyo dhaqan midaysan oo hodan ah."
+                .into(),
+            source: Some("glot".into()),
+        }
+    }
+
+    #[test]
+    fn glot_record_keeps_sub_source_and_its_license() {
+        let CleanResult::Processed(record) =
+            clean_record(&glot_raw(Some("Afriberta")), &cfg(), Utc::now())
+        else {
+            panic!("expected processed");
+        };
+        assert_eq!(record.provenance.subsource.as_deref(), Some("Afriberta"));
+        assert_eq!(record.license, common::types::License::Apache2_0);
+    }
+
+    #[test]
+    fn glot_non_commercial_sub_source_is_labeled() {
+        let CleanResult::Processed(record) =
+            clean_record(&glot_raw(Some("Leipzig_news")), &cfg(), Utc::now())
+        else {
+            panic!("expected processed");
+        };
+        assert_eq!(
+            record.license,
+            common::types::License::Other("CC-BY-NC-SA-3.0".into())
+        );
+    }
+
+    #[test]
+    fn glot_excluded_or_missing_sub_source_is_skipped() {
+        for subsource in [Some("mtdata"), Some("Earthlings"), Some("brand_new"), None] {
+            assert!(
+                matches!(
+                    clean_record(&glot_raw(subsource), &cfg(), Utc::now()),
+                    CleanResult::Skipped
+                ),
+                "{subsource:?}"
+            );
+        }
     }
 }

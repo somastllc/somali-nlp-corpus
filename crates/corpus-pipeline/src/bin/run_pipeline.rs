@@ -97,7 +97,7 @@ fn main() -> Result<()> {
 
     let pipeline_started = Instant::now();
 
-    print_banner("SomNLP pipeline");
+    print_banner("Somali NLP pipeline");
     print_kv("config", args.config.display());
     print_kv("stages", stages.join(" → "));
     if let Some(limit) = args.limit {

@@ -86,7 +86,7 @@ Rust type: `CorpusRecord`.
 | `author` | no | string | Author or organization |
 | `published_at` | no | RFC 3339 UTC | Original publication date |
 | `tags` | no | string[] | Domain/topic labels |
-| `subsource` | no | string | Finer origin (e.g. `so.wikipedia.org`, `bbc.com/somali`) |
+| `subsource` | no | string | Finer origin. For `glot` it is the Glot500 `dataset` column (e.g. `Afriberta`, `Leipzig_news`), which decides the record's license |
 
 ### Required metadata (summary)
 
@@ -107,21 +107,27 @@ Across the full pipeline, every **CorpusRecord** must have:
 
 ## Licensing model
 
-SomNLP-Corpus does **not** ship under one global license. Each source has its own
+Somali NLP Corpus does **not** ship under one global license. Each source has its own
 terms. The `license` field on `CorpusRecord` carries the SPDX-style identifier for
 **that record's source**.
 
 | Approach | Description |
 |----------|-------------|
-| Per-record `license` | Copied from source registry at processing time |
+| Per-record `license` | Copied from the source registry at processing time; for aggregate sources (`glot`) taken from the record's `subsource` |
 | Per-source registry | Canonical license listed in [SOURCES.md](SOURCES.md) |
 | Redistribution | Downstream users filter or attribute per source |
 
 Known license variants in `License` enum:
 
 - `CC0-1.0`, `CC-BY-4.0`, `CC-BY-SA-4.0`, `MIT`, `Apache-2.0`, `public-domain`
-- `Other("…")` for source-specific terms
+- `Other("…")` for everything else, kept verbatim: `ODC-BY`, `CC-BY-2.0-FR`,
+  `CC-BY-NC-SA-4.0`, `CC-BY-NC-SA-3.0`, `NCGL-UK-2.0`
 
+A Glot500 row whose sub-source has no redistributable license (`mtdata`, `earthlings`,
+`bible_crawled`, `bible_pbc`), or whose sub-source is missing or unknown, is excluded at merge,
+so the corpus has no `Other` licenses left. The release export (`scripts/release/export_release.py`)
+sorts records into the `open` and `non-commercial` tiers from this field and refuses any license
+it has not classified.
 When a new source is added, document its license in [SOURCES.md](SOURCES.md) before
 ingestion. Do not assume all sources share the same redistribution rights.
 

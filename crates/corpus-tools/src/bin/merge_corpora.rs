@@ -5,8 +5,9 @@ use anyhow::{bail, Context, Result};
 use chrono::Utc;
 use clap::Parser;
 use common::hash::content_hash;
+use common::registry;
 use corpus_tools::cli;
-use corpus_tools::jsonl::{is_non_empty, read_jsonl_texts, DroppedWriter, JsonlWriter};
+use corpus_tools::jsonl::{is_non_empty, read_jsonl_rows, DroppedWriter, JsonlWriter, RawRow};
 use corpus_tools::raw_paths::source_raw_paths;
 use corpus_tools::stats::{format_number, DedupCounters};
 use serde::Deserialize;
@@ -163,6 +164,7 @@ fn write_report(
         "cross_source_dup_drops": counters.cross_source_dups,
         "per_source_input": counters.per_source_input,
         "per_source_kept": counters.per_source_kept,
+        "policy_excluded": counters.policy_excluded,
         "output_file": output.display().to_string(),
         "dropped_sidecar": dropped_path.display().to_string(),
         "dropped_count": dropped_count,
@@ -215,13 +217,22 @@ fn main() -> Result<()> {
 
         let mut kept_here = 0u64;
         for path in &paths {
-            for text in read_jsonl_texts(path)? {
+            for row in read_jsonl_rows(path)? {
                 if args.limit.is_some_and(|limit| counters.total_kept >= limit) {
                     source_status.push((source.clone(), true, kept_here));
                     break 'sources;
                 }
-                let text = text?;
+                let RawRow { text, subsource } = row?;
                 if !is_non_empty(&text) {
+                    continue;
+                }
+
+                // Excluded before dedup so a record we cannot release never shadows a
+                // releasable copy of the same text from a later source.
+                if registry::lookup(source)
+                    .is_some_and(|entry| entry.record_license(subsource.as_deref()).is_none())
+                {
+                    counters.record_policy_excluded(source, subsource.as_deref());
                     continue;
                 }
 
@@ -239,7 +250,7 @@ fn main() -> Result<()> {
                 }
 
                 seen.insert(hash, source.clone());
-                writer.write_text_source(source, &text)?;
+                writer.write_record(source, subsource.as_deref(), &text)?;
                 counters.record_kept(source);
                 kept_here += 1;
             }

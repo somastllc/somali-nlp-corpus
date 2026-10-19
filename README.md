@@ -255,6 +255,9 @@ schema or removes or relicenses sources, a minor version adds sources or substan
 and a patch version covers takedowns, cleaning corrections, and metadata fixes. Each release
 is a `vX.Y.Z` tag on this repository and on the Hugging Face dataset.
 
+To cite the corpus, use the "Cite this repository" button on GitHub or
+[`CITATION.cff`](CITATION.cff).
+
 To rebuild the release files from a finished `data/final/final_so.jsonl`:
 
 ```bash

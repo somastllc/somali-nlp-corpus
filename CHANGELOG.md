@@ -35,6 +35,8 @@ license-tiered Parquet export for Hugging Face.
 - **Tokenizer holdout re-scored on the 1.0.0 corpus:** 63,542 documents, v1 1.3830 and v2
   **1.3440** mean tokens/word, against 1.8100 (XLM-RoBERTa-base) and 2.6344 (BERT-base). v2 was
   not retrained
+- **`CITATION.cff`** so GitHub offers a "Cite this repository" button and citation tools get the
+  dataset's name, version, authors and Hugging Face URL
 - **Phone-number masking** in deep clean (`mask_phones`, on by default): international numbers,
   Somali local mobile numbers, and local numbers that follow a phone keyword become `⟨phone⟩`.
   Thousands separators, ISBNs, and dotted prices are left alone

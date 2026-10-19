@@ -4,7 +4,12 @@ use std::sync::OnceLock;
 
 use regex::Regex;
 
-pub fn normalize_source_text(source: &str, text: &str, unescape_madlad: bool, strip_opus_html: bool) -> String {
+pub fn normalize_source_text(
+    source: &str,
+    text: &str,
+    unescape_madlad: bool,
+    strip_opus_html: bool,
+) -> String {
     let mut out = text.to_string();
     if unescape_madlad && source == "madlad" {
         out = unescape_literal_escapes(&out);
@@ -72,9 +77,18 @@ mod tests {
 
     #[test]
     fn opus_trailing_tag_removed() {
-        assert_eq!(strip_opus_html_fragments("Waa wanaagsan </p>"), "Waa wanaagsan");
-        assert_eq!(strip_opus_html_fragments("Waa wanaagsan <br>"), "Waa wanaagsan");
-        assert_eq!(strip_opus_html_fragments("Waa wanaagsan <\\/p>"), "Waa wanaagsan");
+        assert_eq!(
+            strip_opus_html_fragments("Waa wanaagsan </p>"),
+            "Waa wanaagsan"
+        );
+        assert_eq!(
+            strip_opus_html_fragments("Waa wanaagsan <br>"),
+            "Waa wanaagsan"
+        );
+        assert_eq!(
+            strip_opus_html_fragments("Waa wanaagsan <\\/p>"),
+            "Waa wanaagsan"
+        );
     }
 
     #[test]

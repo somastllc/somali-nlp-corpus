@@ -25,8 +25,29 @@ pub fn has_reject_html(text: &str) -> bool {
 /// Tags that separate words or lines. Removing them without a replacement would
 /// glue neighbouring words together (`wanaagsan<br>Dadku` -> `wanaagsanDadku`).
 const BREAKING_TAGS: &[&str] = &[
-    "br", "p", "div", "li", "ul", "ol", "tr", "td", "th", "table", "h1", "h2", "h3", "h4",
-    "h5", "h6", "blockquote", "section", "article", "header", "footer", "hr", "pre",
+    "br",
+    "p",
+    "div",
+    "li",
+    "ul",
+    "ol",
+    "tr",
+    "td",
+    "th",
+    "table",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "blockquote",
+    "section",
+    "article",
+    "header",
+    "footer",
+    "hr",
+    "pre",
 ];
 
 fn is_breaking_tag(tag: &str) -> bool {
@@ -43,13 +64,16 @@ fn is_breaking_tag(tag: &str) -> bool {
 /// Remove tags, keeping a line boundary where a block-level tag stood.
 pub fn strip_benign_tags(text: &str) -> String {
     tag_re()
-        .replace_all(text, |caps: &regex::Captures| {
-            if is_breaking_tag(&caps[0]) {
-                "\n"
-            } else {
-                ""
-            }
-        })
+        .replace_all(
+            text,
+            |caps: &regex::Captures| {
+                if is_breaking_tag(&caps[0]) {
+                    "\n"
+                } else {
+                    ""
+                }
+            },
+        )
         .into_owned()
 }
 
@@ -85,7 +109,10 @@ mod tests {
 
     #[test]
     fn strips_malformed_tags_seen_in_web_text() {
-        assert_eq!(strip_benign_tags("Sanadkii <span;>1995 wuxuu"), "Sanadkii 1995 wuxuu");
+        assert_eq!(
+            strip_benign_tags("Sanadkii <span;>1995 wuxuu"),
+            "Sanadkii 1995 wuxuu"
+        );
         assert_eq!(strip_benign_tags("Haa!!<br< span=\"\">"), "Haa!!\n");
     }
 

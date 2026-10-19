@@ -255,13 +255,22 @@ mod tests {
 
     #[test]
     fn glot_records_take_their_sub_source_license() {
-        assert_eq!(glot_license(Some("Afriberta")).as_deref(), Some("\"Apache-2.0\""));
-        assert_eq!(glot_license(Some("afromaft")).as_deref(), Some("\"NCGL-UK-2.0\""));
+        assert_eq!(
+            glot_license(Some("Afriberta")).as_deref(),
+            Some("\"Apache-2.0\"")
+        );
+        assert_eq!(
+            glot_license(Some("afromaft")).as_deref(),
+            Some("\"NCGL-UK-2.0\"")
+        );
         assert_eq!(
             glot_license(Some("Leipzig_news")).as_deref(),
             Some("\"CC-BY-NC-SA-3.0\"")
         );
-        assert_eq!(glot_license(Some("Flores200")).as_deref(), Some("\"CC-BY-SA-4.0\""));
+        assert_eq!(
+            glot_license(Some("Flores200")).as_deref(),
+            Some("\"CC-BY-SA-4.0\"")
+        );
     }
 
     #[test]

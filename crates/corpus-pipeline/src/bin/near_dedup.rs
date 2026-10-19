@@ -11,13 +11,11 @@ use common::registry;
 use common::reject::reject_near_duplicate;
 use common::types::{CorpusRecord, DocId};
 use corpus_pipeline::config::PipelineConfig;
-use corpus_pipeline::io::{
-    par_map_jsonl, to_line, write_report, JsonlSink, RejectWriter,
-};
+use corpus_pipeline::io::{par_map_jsonl, to_line, write_report, JsonlSink, RejectWriter};
 use corpus_pipeline::near_dedup::{near_dedup, shingle};
 use corpus_pipeline::progress::{count_jsonl_lines, PhaseProgress, RecordProgress};
 use corpus_pipeline::report::{
-    print_banner, print_kv, print_paths, print_per_source_flow, pct, write_markdown_companion,
+    pct, print_banner, print_kv, print_paths, print_per_source_flow, write_markdown_companion,
 };
 use serde::Serialize;
 
@@ -80,7 +78,10 @@ enum Partitioned {
         len: usize,
         shingles: Vec<u64>,
     },
-    Sentence { source: String, line: String },
+    Sentence {
+        source: String,
+        line: String,
+    },
 }
 
 fn main() -> Result<()> {
@@ -181,7 +182,8 @@ fn main() -> Result<()> {
         .insert("near_duplicate".to_string(), report.removed as u64);
 
     phases.next("Writing output and reject sidecar");
-    let write_progress = RecordProgress::start("Writing document results", Some(report.document_input));
+    let write_progress =
+        RecordProgress::start("Writing document results", Some(report.document_input));
 
     // Second pass over the input: document text is parsed again here and written in
     // order, so document-class records are never all in memory at once.
@@ -249,7 +251,11 @@ fn main() -> Result<()> {
     print_kv("clusters", report.clusters);
     print_kv(
         "removed",
-        format!("{} ({})", report.removed, pct(report.removed as u64, report.input_docs)),
+        format!(
+            "{} ({})",
+            report.removed,
+            pct(report.removed as u64, report.input_docs)
+        ),
     );
     print_kv("kept", report.output_docs);
     print_per_source_flow(
@@ -277,7 +283,10 @@ fn markdown_body(report: &NearDedupReport, reject_count: u64) -> String {
     md.push_str(&format!("- Tau (Jaccard): {}\n", report.tau));
     md.push_str(&format!("- Input: {}\n", report.input_docs));
     md.push_str(&format!("- Document class: {}\n", report.document_input));
-    md.push_str(&format!("- Sentence passthrough: {}\n", report.sentence_passthrough));
+    md.push_str(&format!(
+        "- Sentence passthrough: {}\n",
+        report.sentence_passthrough
+    ));
     md.push_str(&format!(
         "- Candidate pairs: {} ({} verified)\n",
         report.candidate_pairs, report.verified_pairs

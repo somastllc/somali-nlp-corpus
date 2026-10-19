@@ -73,7 +73,10 @@ fn has_phone_boundaries(text: &str, start: usize, end: usize, plus_prefixed: boo
         Some(',') => plus_prefixed || !before.next().is_some_and(|p| p.is_ascii_digit()),
         Some(_) => true,
     };
-    let after_ok = text[end..].chars().next().is_none_or(|c| !c.is_ascii_digit());
+    let after_ok = text[end..]
+        .chars()
+        .next()
+        .map_or(true, |c| !c.is_ascii_digit());
     before_ok && after_ok
 }
 
@@ -84,7 +87,8 @@ fn mask_phones_with(text: &str, re: &Regex, international: bool) -> String {
         let digits = digit_count(m.as_str());
         let plausible = (MIN_PHONE_DIGITS..=MAX_PHONE_DIGITS).contains(&digits)
             && (!international || !m.as_str().contains('.'));
-        if plausible && has_phone_boundaries(text, m.start(), m.end(), m.as_str().starts_with('+')) {
+        if plausible && has_phone_boundaries(text, m.start(), m.end(), m.as_str().starts_with('+'))
+        {
             out.push_str(&text[last..m.start()]);
             out.push_str(PHONE_SENTINEL);
             last = m.end();
@@ -102,7 +106,7 @@ fn mask_contextual_phones(text: &str) -> String {
         if text[number.end()..]
             .chars()
             .next()
-            .is_none_or(|c| !c.is_ascii_digit())
+            .map_or(true, |c| !c.is_ascii_digit())
         {
             out.push_str(&text[last..number.start()]);
             out.push_str(PHONE_SENTINEL);

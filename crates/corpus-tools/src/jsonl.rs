@@ -201,8 +201,10 @@ pub fn read_jsonl_rows(path: &Path) -> Result<impl Iterator<Item = Result<RawRow
     let file = File::open(path).with_context(|| format!("opening {}", path.display()))?;
     let reader = BufReader::new(file);
 
-    Ok(reader.lines().enumerate().filter_map(move |(index, line)| {
-        match line {
+    Ok(reader
+        .lines()
+        .enumerate()
+        .filter_map(move |(index, line)| match line {
             Ok(raw) => {
                 let raw = raw.trim();
                 if raw.is_empty() {
@@ -218,8 +220,7 @@ pub fn read_jsonl_rows(path: &Path) -> Result<impl Iterator<Item = Result<RawRow
                 Some(Ok(row))
             }
             Err(error) => Some(Err(error.into())),
-        }
-    }))
+        }))
 }
 
 fn parse_jsonl_row(line: &str, path: &Path, line_number: usize) -> Result<RawRow> {
@@ -247,7 +248,9 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("rows.jsonl");
         let mut writer = JsonlWriter::create(&path, "test").unwrap();
-        writer.write_record("glot", Some("Afriberta"), "alpha beta").unwrap();
+        writer
+            .write_record("glot", Some("Afriberta"), "alpha beta")
+            .unwrap();
         writer.write_record("hplt", None, "gamma delta").unwrap();
         writer.finish();
 
@@ -258,8 +261,14 @@ mod tests {
         assert_eq!(
             rows,
             vec![
-                RawRow { text: "alpha beta".into(), subsource: Some("Afriberta".into()) },
-                RawRow { text: "gamma delta".into(), subsource: None },
+                RawRow {
+                    text: "alpha beta".into(),
+                    subsource: Some("Afriberta".into())
+                },
+                RawRow {
+                    text: "gamma delta".into(),
+                    subsource: None
+                },
             ]
         );
     }

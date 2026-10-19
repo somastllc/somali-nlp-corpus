@@ -2,6 +2,11 @@
 
 **Somali NLP Corpus Tokenizer Research Note**
 
+> **Scope of the figures.** The benchmark below was scored on the 2026-09-24 seventeen-source
+> corpus, which still contained Somali TinyStories, QuranEnc and Tanzil. Release 1.0.0 ships
+> fourteen sources without them; the benchmark was not re-run on it. The 1.0.0 full-corpus token
+> total (1,129,084,663; 1.3653 tokens/word) is measured in `corpus_token_stats.json`.
+
 ---
 
 ## Abstract

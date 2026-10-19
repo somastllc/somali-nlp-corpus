@@ -45,11 +45,9 @@ MT560 records include a source tag:
 ./target/release/download_opus_so         [--limit N] [--no-stream]
 ./target/release/download_madlad_so       [--limit N] [--include-noisy]
 ./target/release/download_mt560_so        [--limit N]
-./target/release/download_quran_so        [--limit N] [--concurrency N]
 ./target/release/download_wikipedia_so    [--limit N] [--no-stream]
 ./target/release/download_xlsum_so        [--limit N] [--field F] [--splits S...]
 ./target/release/download_nllb_so         [--limit N] [--min-laser L] [--min-som-lid S]
-./target/release/download_quran_tanzil    [--limit N] [--translation-id ID]
 ./target/release/download_glot_so         [--limit N] [--no-stream] [--split S]
 ./target/release/download_somali_web_corpus_so [--limit N] [--no-stream]
 ./target/release/download_finepdfs_so     [--limit N] [--no-stream]
@@ -81,20 +79,16 @@ Default outputs:
 | OPUS | `data/raw/opus/opus_so.jsonl` |
 | MADLAD | `data/raw/madlad/madlad_so.jsonl` |
 | MT560 | `data/raw/mt560/mt560_so.jsonl` |
-| Qur'an (QuranEnc) | `data/raw/quran/translation.json` + `data/raw/quran/footnotes.json` |
 | Wikipedia | `data/raw/wikipedia/wikipedia_so.jsonl` |
 | XL-Sum | `data/raw/xlsum/xlsum_so.jsonl` |
 | NLLB | `data/raw/nllb/nllb_so.jsonl` |
-| Qur'an (Tanzil) | `data/raw/quran-tanzil/translation.json` |
 | Glot500 | `data/raw/glot/glot_so.jsonl` |
 | Somali Web Corpus | `data/raw/somali-web-corpus/somali-web-corpus_so.jsonl` |
 | FinePDFs | `data/raw/finepdfs/finepdfs_so.jsonl` |
 | FineWeb-2 | `data/raw/fineweb-2/fineweb-2_so.jsonl` |
 | Somali Alpaca | `data/raw/somali-dataset/somali-dataset_so.jsonl` |
 
-Recommended download order: HPLT → CC100 → mC4 → OPUS → MADLAD → MT560 → Wikipedia → XLSum → NLLB → Tanzil.
-
-Recommended download order: HPLT → CC100 → mC4 → OPUS → MADLAD → MT560.
+Recommended download order: HPLT → CC100 → mC4 → OPUS → MADLAD → MT560 → Wikipedia → XLSum → NLLB.
 
 ## Stage 2 — Merge + exact dedup
 
@@ -275,7 +269,7 @@ jq -r '[.reason, .source, .text] | @tsv' \
 | `not_somali` | Detector returned a non-Somali language |
 | `low_lang_score` | Detected Somali but below `min_confidence` |
 
-Sentence-class sources (OPUS, MT560, NLLB, QuranEnc, Tanzil) are tagged only — never rejected at LID.
+Sentence-class sources (OPUS, MT560, NLLB) are tagged only — never rejected at LID.
 
 **Deep clean** — see [CLEANING_STRATEGY.md](CLEANING_STRATEGY.md) for full flag list.
 Common reject reasons:

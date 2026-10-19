@@ -17,30 +17,32 @@ contains a corpus-trained ByteLevel BPE tokenizer.
 
 ## Current release
 
-The latest measured build completed on **2026-10-19** and combines **16 public sources**:
+Version **1.0.0** is the build of **2026-10-19**, combining **14 public sources**:
 
 | Final documents | Words | v2 subword tokens | JSONL size |
 | --------------: | ----: | ----------------: | ---------: |
-| 7,959,336 | 829,859,085 | 1,132,999,631 | 8.45 GiB |
+| 7,913,008 | 826,973,689 | 1,129,084,663 | 8.45 GiB |
 
-The release artifact is `data/final/final_so.jsonl`. Corpus data is not stored in Git;
-build it with the pipeline below. Trained tokenizer artifacts and their benchmark summary
-are tracked for reproducibility.
+The pipeline output is `data/final/final_so.jsonl`. Corpus data is not stored in Git;
+build it with the pipeline below or download the release from Hugging Face (see
+[Release and versions](#release-and-versions)). Trained tokenizer artifacts and their
+benchmark summary are tracked for reproducibility.
 
-Public-dataset ingestion and the processing pipeline are complete. Targeted web
-collection and Hugging Face packaging are in progress. See [ROADMAP.md](ROADMAP.md) for
-milestones and [CHANGELOG.md](CHANGELOG.md) for project history.
+Public-dataset ingestion, the processing pipeline, and release packaging are complete.
+Targeted web collection is next. See [ROADMAP.md](ROADMAP.md) for milestones and
+[CHANGELOG.md](CHANGELOG.md) for project history.
 
 ## What is included
 
-- Downloaders for HPLT, CC100, mC4, OPUS, MADLAD, MT560, QuranEnc, Tanzil,
-  Wikipedia, XL-Sum, NLLB, Glot500, Somali Web Corpus, FinePDFs, FineWeb-2, Somali
-  Alpaca (`Somali_dataset`)
+- Downloaders for HPLT, CC100, mC4, OPUS, MADLAD, MT560, Wikipedia, XL-Sum, NLLB,
+  Glot500, Somali Web Corpus, FinePDFs, FineWeb-2, Somali Alpaca (`Somali_dataset`)
 - Streaming merge and exact deduplication
 - Text normalization, language identification, source-aware deep cleaning, and
   MinHash/LSH near-deduplication
-- Per-record provenance, source license, content hash, deduplication metadata, and
-  quality metadata
+- Per-record provenance, license, content hash, deduplication metadata, and quality
+  metadata
+- An export that splits the corpus into commercial-use (`open`) and `non-commercial`
+  Parquet configurations from each record's own license
 - Reject sidecars and per-stage statistics for auditing removed records
 - A 48k-vocabulary Somali ByteLevel BPE tokenizer and reproducible training scripts
 
@@ -55,16 +57,18 @@ raw/       merged/              cleaned/  lid/   deep_clean/  final/
 
 | Stage | Documents | Removed at stage |
 | ----- | --------: | ---------------: |
-| Downloaded | 18,162,866 | — |
-| Merged | 11,711,627 | 6,451,239 |
-| Cleaned | 9,018,923 | 2,692,704 |
-| LID verified | 8,701,559 | 317,364 |
-| Deep cleaned | 8,587,177 | 114,382 |
-| **Final** | **7,959,336** | **627,841** |
+| Downloaded | 18,149,257 | — |
+| Merged | 11,457,425 | 6,691,832 |
+| Cleaned | 8,962,643 | 2,494,782 |
+| LID verified | 8,646,184 | 316,459 |
+| Deep cleaned | 8,531,896 | 114,288 |
+| **Final** | **7,913,008** | **618,888** |
 
-These figures describe the 2026-10-19 run (16 sources) and may change when upstream
-datasets change. Previous runs: 17 sources, 2026-09-24 (7.98M final · 832M words · 1.14B
-tokens); 13 sources, 2026-09-02 (7.35M final · 666M words · 912M tokens). Each local run
+The merge stage also applies the license policy: 303,550 Glot500 rows from sub-sources
+without a redistributable license are excluded there. These figures describe the 1.0.0 build
+(14 sources) and may change when upstream datasets change. Previous runs: 17 sources,
+2026-09-24 (7.98M final · 832M words · 1.14B tokens); 13 sources, 2026-09-02 (7.35M final ·
+666M words · 912M tokens). Each local run
 writes detailed stage statistics under `reports/`; the timings, per-source funnel, and
 final-file validation for this run are in [docs/runs/2026-10-19.md](docs/runs/2026-10-19.md).
 
@@ -103,7 +107,7 @@ build if you want a clean run.
 
 ### Build the full corpus
 
-Run the 16 downloaders:
+Run the 14 downloaders:
 
 ```bash
 ./target/release/download_hplt_so
@@ -112,8 +116,6 @@ Run the 16 downloaders:
 ./target/release/download_opus_so
 ./target/release/download_madlad_so
 ./target/release/download_mt560_so
-./target/release/download_quran_so
-./target/release/download_quran_tanzil
 ./target/release/download_wikipedia_so
 ./target/release/download_xlsum_so
 ./target/release/download_nllb_so
@@ -141,23 +143,29 @@ streaming, but the largest stages still require substantial disk space and runti
 | CC-100 Somali | document | CC-BY-SA-4.0 |
 | mC4 Somali | document | ODC-BY |
 | MADLAD-400 Somali | document | ODC-BY |
-| Glot500 (`som_Latn`) | document | source-specific |
+| Glot500 (`som_Latn`) | document | per sub-source (Apache-2.0, CC0-1.0, CC-BY-4.0, CC-BY-SA-4.0, CC-BY-NC-SA-3.0, NCGL-UK-2.0) |
 | Somali Web Corpus V1 | document | MIT |
 | FinePDFs (`som_Latn`) | document | ODC-BY |
 | FineWeb-2 (`som_Latn`) | document | ODC-BY |
 | Somali Alpaca (`burtugeey/Somali_dataset`) | document | MIT |
 | Somali Wikipedia | document | CC-BY-SA-4.0 |
-| XL-Sum Somali | document | CC-BY-4.0 |
+| XL-Sum Somali | document | CC-BY-NC-SA-4.0 |
 | OPUS ParaCrawl (`en-so`) | sentence | CC0-1.0 |
 | MT560 (`en-so`) | sentence | CC-BY-4.0 |
 | NLLB (`eng_Latn-som_Latn`) | sentence | ODC-BY |
-| QuranEnc Somali (Yacob Yusuf) | sentence | source-specific |
-| Tanzil Somali (Abduh) | sentence | source-specific |
 
 > **There is no single corpus-wide license.** Every processed record carries its
 > upstream license. Users are responsible for following the terms of each source when
 > redistributing or using the combined corpus.
 
+The release export sorts records into two tiers by their own `license` field: `open`
+(CC0, CC-BY, CC-BY-SA, ODC-BY, MIT, Apache-2.0; 6,955,948 records) and `non-commercial`
+(CC-BY-NC-SA and the UK Non-Commercial Government Licence; 957,060 records). An unclassified
+license stops the export instead of defaulting to the open tier.
+
+Excluded for licensing: the QuranEnc and Tanzil Qur'an translations, Somali TinyStories (no
+license on its card), and the MTData, Earthlings (GPL-3.0), Bible_crawled, and Bible_pbc rows
+of Glot500.
 Dataset URLs, access methods, measured scale, and detailed licensing notes are maintained
 in [`docs/SOURCES.md`](docs/SOURCES.md). Record-level licensing is described in
 [`docs/METADATA_SCHEMA.md`](docs/METADATA_SCHEMA.md).
@@ -173,7 +181,8 @@ Processed records are newline-delimited JSON with this shape (values abbreviated
   "provenance": {
     "source": "hplt",
     "collected_at": "2026-09-01T00:00:00Z",
-    "lang": "so"
+    "lang": "so",
+    "subsource": null
   },
   "license": "CC0-1.0",
   "content_hash": "a3f8c2…",
@@ -183,8 +192,10 @@ Processed records are newline-delimited JSON with this shape (values abbreviated
 }
 ```
 
-See [`docs/METADATA_SCHEMA.md`](docs/METADATA_SCHEMA.md) for optional provenance,
-quality, and metadata fields.
+`subsource` names the upstream dataset inside Glot500 and is absent for other sources. See
+[`docs/METADATA_SCHEMA.md`](docs/METADATA_SCHEMA.md) for optional provenance, quality, and
+metadata fields. Language tags on NLLB rows are detector guesses, not annotations: 107,326
+records in the corpus are tagged with a language other than `so`, almost all of them NLLB.
 
 ## Tokenizer
 
@@ -203,14 +214,14 @@ The repository includes two trained tokenizer artifacts:
 | Documents emitting `<unk>` | 9 | **0** |
 
 Scored on 64,041 held-out documents from the 17-source corpus of 2026-09-24 (not re-scored on
-the 16-source corpus), against 1.8105 for
+the 14-source corpus), against 1.8105 for
 XLM-RoBERTa-base and 2.6349 for BERT-base on the same text. v2's vocabulary was trained on
 the earlier 11-source corpus and was not retrained for the six sources added since. On the
 holdout, FineWeb-2 (1.3395) tokenizes at or below the
 mean of 1.3444; Somali Alpaca (1.4022) is slightly above it, and FinePDFs (1.4906) is in
 line with Wikipedia (1.4842) and mC4 (1.4742), which v2 was trained on.
 
-The 1,132,999,631-token release total (1.3653 tokens/word over the full corpus) comes from
+The 1,129,084,663-token release total (1.3653 tokens/word over the full corpus) comes from
 `tokenize_corpus.py`, which encodes every document in the corpus rather than extrapolating
 from the holdout ratio.
 
@@ -232,6 +243,28 @@ python tokenize_corpus.py
 The training corpus and evaluation split are generated locally and ignored by Git. See
 [`tokenizer/PAPER.md`](tokenizer/PAPER.md) for methodology, vocabulary-size experiments,
 baseline comparisons, and Hugging Face export instructions.
+
+## Release and versions
+
+The corpus is published as a gated dataset on Hugging Face,
+[`somast/somali-nlp-corpus`](https://huggingface.co/datasets/somast/somali-nlp-corpus), with
+two configurations: `open` and `non-commercial`. Access requires accepting the terms on the
+dataset page. Takedown requests go to info@somast.so.
+
+Versions follow [semantic versioning](https://semver.org): a major version changes the record
+schema or removes or relicenses sources, a minor version adds sources or substantial data,
+and a patch version covers takedowns, cleaning corrections, and metadata fixes. Each release
+is a `vX.Y.Z` tag on this repository and on the Hugging Face dataset.
+
+To rebuild the release files from a finished `data/final/final_so.jsonl`:
+
+```bash
+cd scripts/release
+python -m venv .venv && .venv/bin/pip install -r requirements.txt
+cd ../..
+scripts/release/.venv/bin/python scripts/release/export_release.py          # Parquet + checksums
+scripts/release/.venv/bin/python scripts/release/build_card.py --contact info@somast.so
+```
 
 ## Development
 

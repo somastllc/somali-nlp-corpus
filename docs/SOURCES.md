@@ -19,62 +19,75 @@ See also: [METADATA_SCHEMA.md](METADATA_SCHEMA.md), [PLAN.md](../PLAN.md).
 | `madlad` | MADLAD-400 `so` | web crawl | A | tens of millions | ODC-BY | `download_madlad_so` | done | Clean split default; `--include-noisy` optional |
 | `opus` | OPUS ParaCrawl `en-so` | parallel text | A | parallel sentences | CC0-1.0 | `download_opus_so` | done | Somali column from `translation.so` |
 | `mt560` | MT560 en–so pairs | parallel / religious | A | ~161K pairs | CC-BY-4.0 | `download_mt560_so` | done | Writes `source: mt560` tag in raw JSONL |
-| `quran` | QuranEnc Somali (Yacob Yusuf) | religious | A | 7,373 rows (6,236 verses + 1,137 footnotes) | see source | `download_quran_so` | done | Two outputs: verse translations and footnote explanations |
 | `wikipedia` | Somali Wikipedia | encyclopedia | A | 9,021 articles (measured) | CC-BY-SA-4.0 | `download_wikipedia_so` | done | HF `wikimedia/wikipedia` dataset (`20231101.so`) |
-| `xlsum` | XL-Sum Somali | news / summary | A | 7,452 articles (measured) | CC-BY-4.0 | `download_xlsum_so` | done | `csebuetnlp/xlsum` (`somali` config) |
-| `nllb` | NLLB English–Somali | parallel text | A | 10.2M pairs raw · 4.7M kept at merge | ODC-BY | `download_nllb_so` | done | Official Meta/AllenAI NLLB TSV export |
-| `glot` | Glot500 Somali (`som_Latn`) | web crawl / aggregated | A | ~3.9M docs (HF train) | see source | `download_glot_so` | done | HF `cis-lmu/Glot500` parquet export |
+| `xlsum` | XL-Sum Somali | news / summary | A | 7,452 articles (measured) | CC-BY-NC-SA-4.0 | `download_xlsum_so` | done | `csebuetnlp/xlsum` (`somali` config) |
+| `nllb` | NLLB English–Somali | parallel text | A | 10.2M pairs raw · 4.4M kept at merge | ODC-BY | `download_nllb_so` | done | Official Meta/AllenAI NLLB TSV export |
+| `glot` | Glot500 Somali (`som_Latn`) | web crawl / aggregated | A | ~3.9M docs (HF train) | per record (sub-source) | `download_glot_so` | done | HF `cis-lmu/Glot500` parquet export |
 | `somali-web-corpus` | Somali Web Corpus V1 | web crawl | A | ~218K docs (HF train) | MIT | `download_somali_web_corpus_so` | done | HF `maanka2/somali-web-corpus` parquet export |
 | `finepdfs` | FinePDFs Somali (`som_Latn`) | PDF documents | A | 21,781 docs (HF train) | ODC-BY | `download_finepdfs_so` | done | HF `HuggingFaceFW/finepdfs` parquet export; long documents |
 | `fineweb-2` | FineWeb-2 Somali (`som_Latn`) | web crawl | A | 1,070,384 docs (HF train) | ODC-BY | `download_fineweb2_so` | done | HF `HuggingFaceFW/fineweb-2` parquet export; heavy overlap with HPLT/mC4 |
 | `somali-dataset` | Somali Alpaca instructions | instruction data | A | 44,839 rows (HF train) | MIT | `download_somali_dataset_so` | done | HF `burtugeey/Somali_dataset`; instruction, input, and output joined per row |
-| `tanzil` | Tanzil Qur'an Somali (Abduh) | religious | A | 6,236 ayahs | see source | `download_quran_tanzil` | done | Separate translation from QuranEnc; no footnotes upstream |
 
 ### Excluded sources
 
-`somali-tinystories` (Hugging Face `Zyroxx66/somali-tinystories`, 42,000 stories) was removed
-from the pipeline: its dataset card states no license, so redistribution is not clear.
+- `somali-tinystories` (Hugging Face `Zyroxx66/somali-tinystories`, 42,000 stories): its
+  dataset card states no license, so redistribution is not clear.
+- `quran` (QuranEnc, Yacob Yusuf translation) and `tanzil` (Tanzil.net, Abduh translation):
+  the upstream terms could not be confirmed as allowing redistribution inside a dataset, so
+  both were dropped together with their downloaders. Together they were 12,845 final records.
+- Four Glot500 sub-sources are excluded at merge, 303,550 rows in all: `mtdata` (197,228),
+  `Earthlings` (76,762, GPL-3.0), `Bible_crawled` (29,557), and `Bible_pbc` (3).
+  A Glot500 row with a missing or unknown sub-source is excluded too.
 
 ### Track A licensing note
 
 There is **no single corpus license**. Redistribution of the combined corpus requires
 honoring each upstream license. The `license` field on processed records is copied
-from this registry (see [METADATA_SCHEMA.md](METADATA_SCHEMA.md)).
+from this registry (see [METADATA_SCHEMA.md](METADATA_SCHEMA.md)). Glot500 is an aggregate:
+its records take the license of their sub-source, recorded in `provenance.subsource`.
+
+| Tier | Licenses | Final records |
+|------|----------|--------------:|
+| `open` (commercial use allowed) | ODC-BY 5,476,490 · CC0-1.0 568,494 · Apache-2.0 399,434 · CC-BY-SA-4.0 302,154 · MIT 159,055 · CC-BY-4.0 50,321 | 6,955,948 |
+| `non-commercial` | NCGL-UK-2.0 860,590 · CC-BY-NC-SA-3.0 91,443 · CC-BY-NC-SA-4.0 5,027 | 957,060 |
+
+The release export builds these two Hugging Face configurations from the per-record field.
+Share-alike obligations (CC-BY-SA, CC-BY-NC-SA) and the Common Crawl terms of use still apply
+to the records they cover; the release `ATTRIBUTION.md` lists them.
 
 ### Track A outlook
 
-Sixteen public sources total **18.2M raw documents** (NLLB dominates). The full
-sixteen-source Track A corpus measured **7,959,336 final documents · 830M words ·
-1,133M v2 tokens** (2026-10-19 run — see [README.md](../README.md)). Previous runs:
+Fourteen shipped public sources total **18.1M raw documents** (NLLB dominates). The
+fourteen-source Track A corpus (release 1.0.0) measured **7,913,008 final documents · 827M
+words · 1,129M v2 tokens** (2026-10-19 run — see [README.md](../README.md)). Previous runs:
 seventeen sources (2026-09-24) · 7.98M final documents · 832M words · 1,136M v2 tokens, and
 thirteen sources (2026-09-02) · 7.35M final documents · 666M words · 912M v2 tokens. Incremental measurement
 notes: [reports/runs/MEASUREMENT.md](../reports/runs/MEASUREMENT.md).
 
-### Measured final documents (2026-10-19)
+### Measured final documents (2026-10-19, 1.0.0)
 
 | Key | Raw | Kept at merge | Final | Words | v2 tokens |
 |-----|----:|-------------:|------:|------:|----------:|
-| `nllb` | 10,229,073 | 4,372,863 | 4,107,332 | 62,060,576 | 82,077,792 |
-| `glot` | 3,915,898 | 3,840,616 | 1,432,165 | 66,935,472 | 89,392,345 |
-| `fineweb-2` | 1,070,384 | 854,615 | 589,792 | 156,976,582 | 208,769,273 |
-| `mc4` | 893,012 | 892,852 | 586,092 | 214,035,028 | 313,668,364 |
-| `hplt` | 966,507 | 798,364 | 554,915 | 184,732,452 | 247,502,074 |
-| `cc100` | 396,524 | 374,721 | 296,154 | 49,297,022 | 61,321,508 |
-| `madlad` | 200,494 | 200,484 | 128,706 | 61,836,121 | 82,261,824 |
-| `somali-web-corpus` | 217,528 | 217,390 | 121,764 | 4,890,563 | 6,111,014 |
+| `nllb` | 10,229,073 | 4,416,610 | 4,151,034 | 62,757,823 | 83,017,929 |
+| `glot` | 3,915,898 | 3,555,894 | 1,354,751 | 63,617,306 | 84,989,034 |
+| `fineweb-2` | 1,070,384 | 854,713 | 589,888 | 156,978,595 | 208,761,477 |
+| `mc4` | 893,012 | 892,852 | 586,110 | 214,033,522 | 313,655,232 |
+| `hplt` | 966,507 | 798,364 | 554,929 | 184,729,346 | 247,476,026 |
+| `cc100` | 396,524 | 374,721 | 296,221 | 49,299,863 | 61,322,715 |
+| `madlad` | 200,494 | 200,484 | 128,708 | 61,837,547 | 82,261,565 |
+| `somali-web-corpus` | 217,528 | 217,390 | 121,792 | 4,891,698 | 6,112,389 |
 | `mt560` | 161,865 | 51,083 | 49,195 | 1,162,745 | 1,423,242 |
-| `somali-dataset` | 44,839 | 44,793 | 37,259 | 5,776,804 | 7,967,427 |
-| `finepdfs` | 21,781 | 21,780 | 20,750 | 18,628,709 | 27,659,809 |
+| `somali-dataset` | 44,839 | 44,793 | 37,263 | 5,777,922 | 7,969,383 |
+| `finepdfs` | 21,781 | 21,780 | 20,750 | 18,626,664 | 27,654,839 |
 | `opus` | 14,879 | 12,296 | 12,125 | 381,720 | 517,110 |
-| `quran` | 7,373 | 7,277 | 7,072 | 160,068 | 240,053 |
-| `quran-tanzil` | 6,236 | 6,048 | 5,773 | 106,282 | 164,038 |
-| `wikipedia` | 9,021 | 8,994 | 5,215 | 1,120,134 | 1,733,935 |
+| `wikipedia` | 9,021 | 8,994 | 5,215 | 1,120,131 | 1,733,899 |
 | `xlsum` | 7,452 | 7,451 | 5,027 | 1,758,807 | 2,189,823 |
-| **Total** | **18,162,866** | **11,711,627** | **7,959,336** | **829,859,085** | **1,132,999,631** |
+| **Total** | **18,149,257** | **11,457,425** | **7,913,008** | **826,973,689** | **1,129,084,663** |
 
 Raw, merge, and final counts come from `reports/01_merge_stats.json` and
 `reports/05_near_dedup_stats.json`; words and tokens from `tokenizer/corpus_token_stats.json`.
-Per-stage drops and timings: [runs/2026-10-19.md](runs/2026-10-19.md).
+Glot500 raw includes the 303,550 rows excluded by license policy. Per-stage drops and timings:
+[runs/2026-10-19.md](runs/2026-10-19.md).
 
 ### Measured final documents (2026-09-24, 17 sources, superseded)
 
@@ -179,14 +192,6 @@ Raw, merge, and final counts come from `reports/01_merge_stats.json` and
 - **Output:** `data/raw/mt560/mt560_so.jsonl`
 - **License:** CC-BY-4.0 (verify on upstream)
 
-### `quran`
-
-- **Upstream:** [QuranEnc Somali (Yacob Yusuf)](https://quranenc.com/api/v1/translation/sura/somali_yacob/1) translation API
-- **Access:** Direct HTTP JSON; suras 1–114 fetched concurrently; fields `translation` + `footnotes`
-- **Output:** `data/raw/quran/translation.json` (verse text) and `data/raw/quran/footnotes.json` (footnote explanations)
-- **Cleaning:** strips leading verse numbers and inline footnote markers from translations; strips leading `[n].` markers from footnotes; empty footnotes dropped
-- **License:** see upstream QuranEnc terms (verify before release)
-
 ### `wikipedia`
 
 - **Upstream:** [wikimedia/wikipedia](https://huggingface.co/datasets/wikimedia/wikipedia) config `20231101.so`
@@ -199,14 +204,18 @@ Raw, merge, and final counts come from `reports/01_merge_stats.json` and
 - **Upstream:** [csebuetnlp/xlsum](https://huggingface.co/datasets/csebuetnlp/xlsum) config `somali`
 - **Access:** Hugging Face parquet auto-converted revision (`PARQUET_REVISION`)
 - **Output:** `data/raw/xlsum/xlsum_so.jsonl`
-- **License:** CC-BY-4.0
+- **License:** CC-BY-NC-SA-4.0 (non-commercial; the upstream card says CC BY-NC-SA 4.0)
 
 ### `glot`
 
 - **Upstream:** [cis-lmu/Glot500](https://huggingface.co/datasets/cis-lmu/Glot500) config `som_Latn`
 - **Access:** Hugging Face parquet export (`refs/convert/parquet`); train split
-- **Output:** `data/raw/glot/glot_so.jsonl`
-- **License:** see upstream Glot500 dataset card
+- **Output:** `data/raw/glot/glot_so.jsonl`; each row keeps the Glot500 `dataset` column as `subsource`
+- **License:** per sub-source, from the Glot500-c source table (see `GLOT_SUBSOURCES` in
+  `crates/common/src/registry.rs`). Kept: `Afriberta` (Apache-2.0), `afromaft` (NCGL-UK-2.0),
+  `Leipzig_*` and `wiki` (CC-BY-NC-SA-3.0), `Flores200` (CC-BY-SA-4.0), `nllb_other_hornmt`
+  (CC-BY-4.0), `nllb_other_tico` (CC0-1.0), `tatoeba` (CC-BY-2.0-FR) and `wikidata` (CC0-1.0) where present. Excluded:
+  `mtdata`, `Earthlings`, `Bible_crawled`, `Bible_pbc`, and any row with a missing or unknown sub-source
 
 ### `somali-web-corpus`
 
@@ -247,12 +256,6 @@ Raw, merge, and final counts come from `reports/01_merge_stats.json` and
 - **Output:** `data/raw/nllb/nllb_so.jsonl`
 - **License:** ODC-BY
 
-### `tanzil`
-
-- **Upstream:** [Tanzil.net](https://tanzil.net/trans/?transID=so.abduh&type=txt-2&agree=true) (Mahmud Muhammad Abduh translation)
-- **Access:** Direct HTTP TXT download; 6,236 ayahs parsed
-- **Output:** `data/raw/quran-tanzil/translation.json`
-- **License:** see upstream Tanzil.net terms
 
 ---
 

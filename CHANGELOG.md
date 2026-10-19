@@ -5,17 +5,40 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-10-19
+
+First release of the cleaned corpus as a dataset: 14 sources, per-record licenses, and a
+license-tiered Parquet export for Hugging Face.
+
 ### Added
 
-- **Sixteen-source measured run (2026-10-19)** — full Track A pipeline after the deep-clean
-  fixes and the removal of Somali TinyStories: 18.2M raw → 11.71M merged → 7,959,336 final
-  documents · 829,859,085 words · **1,132,999,631 v2 subword tokens** (1.3653 tokens/word),
-  measured over every document. Stage funnel, timings, per-source drops, and a final-file
-  validation: [docs/runs/2026-10-19.md](docs/runs/2026-10-19.md)
+- **Fourteen-source measured run (2026-10-19, release 1.0.0)** — full Track A pipeline after the
+  deep-clean fixes, the license policy, and phone masking: 18.1M raw → 11.46M merged →
+  7,913,008 final documents · 826,973,689 words · **1,129,084,663 v2 subword tokens**
+  (1.3653 tokens/word), measured over every document. Stage funnel, timings, per-source drops,
+  and a final-file validation: [docs/runs/2026-10-19.md](docs/runs/2026-10-19.md)
+- **Per-record licenses.** Every record's `license` is the license of its own upstream dataset.
+  Glot500 is an aggregate, so its downloader now keeps the `dataset` column as
+  `provenance.subsource` and the license comes from a sub-source table in the registry. The
+  sub-sources `mtdata`, `Earthlings`, `Bible_crawled`, and `Bible_pbc` have no redistributable
+  license; they are excluded at merge, and so is any row with a missing or unknown sub-source
+  (303,550 rows). The corpus no longer contains a record with license `Other`
+- **License-tiered release export** (`scripts/release/export_release.py`): writes zstd Parquet
+  shards to `data/open` (commercial use allowed, 6,955,948 records) and `data/non-commercial`
+  (957,060 records) from each record's license, plus `manifest.json` and `SHA256SUMS`, and
+  verifies checksums and row counts. A license it does not recognize stops the export
+- **Dataset card and attribution generator** (`scripts/release/build_card.py`): the card for
+  `somast/somali-nlp-corpus` (configs, fields, sources with counts, limitations, access terms
+  for the gated repository, versioning policy) and `ATTRIBUTION.md` (upstream credits, Glot500
+  sub-source table, Common Crawl and share-alike notices). Counts come from the manifest and the
+  token statistics, and the build fails if they describe different data
+- **Phone-number masking** in deep clean (`mask_phones`, on by default): international numbers,
+  Somali local mobile numbers, and local numbers that follow a phone keyword become `⟨phone⟩`.
+  Thousands separators, ISBNs, and dotted prices are left alone
 - **Exact dedup after deep clean.** Deep clean rewrites text, so records that differed before
   can become identical. The deep-clean writer now drops later copies across all sources, first
   seen wins, with reason `exact_duplicate_after_deep_clean` and `duplicate_of` set on the
-  reject sidecar record (53,269 records in the 2026-10-19 run)
+  reject sidecar record (53,189 records in the 2026-10-19 run)
 - **Seventeen-source measured run (2026-09-24)** — full Track A pipeline on all downloaders:
   18.2M raw → 11.71M merged → 7,981,982 final documents ·
   832M words · **1,136,027,958 v2 subword tokens** (1.3650 tokens/word),
@@ -58,12 +81,20 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Removed
 
+- **QuranEnc and Tanzil** (`quran`, `quran-tanzil`): the terms for redistributing the
+  translations inside a dataset could not be confirmed. Both downloaders, registry entries and
+  merge-order entries are gone; they were 12,845 final records
 - **Somali TinyStories** (`somali-tinystories`): its dataset card carries no license, so there
   is no clear right to redistribute it. The downloader, registry entry, merge-order entry and
   download-script wiring are gone. It contributed 21,100 documents (0.3% of tokens)
 
 ### Fixed
 
+- **Malformed tags survived deep clean.** Fragments such as `<span;>` and `<br< span="">` were
+  not matched by the tag pattern. They are now stripped, and the final file has none
+- **Corpus docs claimed NLLB rows carry no language tag.** They carry the detector's guess,
+  and 107,326 final records are tagged with a language other than `so`. The documentation now
+  says so
 - **Deep clean joined words across HTML tags.** Tags were replaced with nothing, so
   `wanaagsan<br>Dadku` became `wanaagsanDadku`. Block-level tags (`br`, `p`, `div`, `li`, ...)
   now leave a line break, and self-closing tags such as `<br/>` are matched
@@ -148,12 +179,14 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Known issues
 
-- Three sources carry license `Other` in the registry: Glot500 (1,432,165 final records),
-  QuranEnc (7,072), and Tanzil (5,773). Their redistribution terms must be confirmed before
-  release.
-- 107,125 final records have a language tag other than `so`, almost all NLLB, whose rows carry
-  no language tag. This is tagging metadata, not a detected error.
-- 44 final records still contain an HTML tag, and 40 remain on review (`high_symbol_ratio`).
+- 107,326 final records have a language tag other than `so`, almost all NLLB. The tag is the
+  detector's guess; most of these are short or noisy Somali, but a few thousand with high
+  confidence are junk or foreign text.
+- 28 final records still hold a phone number after a phone keyword that the masking does not
+  cover (12 to 14 digits, such as German mobiles and `00`-prefixed numbers after a dash).
+  Names and other personal details in news text are not masked at all.
+- 40 final records remain on review (`high_symbol_ratio`).
+- The share-alike terms of CC-100, Wikipedia, and FLORES-200 have not had a legal review.
 - The tokenizer holdout benchmark (`tokenizer/benchmark_results.json`, `tokenizer_stats.json`)
   was last scored on the 17-source corpus and has not been re-run; the full-corpus token counts
   in `corpus_token_stats.json` are current.

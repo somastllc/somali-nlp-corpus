@@ -74,17 +74,15 @@ collection adds fresher, higher-quality, domain-specific text that public dumps 
 | Somali Wikipedia | 9,021 articles (measured) |
 | XL-Sum | 7,452 news articles (measured) |
 | NLLB en–so | 10.2M parallel sentences raw · 4.7M kept at merge |
-| QuranEnc (Yacob Yusuf) | ~7.4K rows (6,236 verses + 1,137 footnotes) |
-| Tanzil (Abduh) | ~6.2K ayahs (no footnotes) |
-| Glot500 | 3.9M rows raw · 3.84M kept at merge |
-| Somali Web Corpus | 217,528 rows raw · 121,764 final documents |
+| Glot500 | 3.9M rows raw · 3.56M kept at merge (rows from sub-sources without a redistributable license are excluded) |
+| Somali Web Corpus | 217,528 rows raw · 121,792 final documents |
 | FinePDFs | 21,781 rows raw · 20,750 final documents |
-| FineWeb-2 | 1,070,384 rows raw · 589,792 final documents |
-| Somali Alpaca | 44,839 rows raw · 37,259 final documents |
+| FineWeb-2 | 1,070,384 rows raw · 589,888 final documents |
+| Somali Alpaca | 44,839 rows raw · 37,263 final documents |
 
-All sixteen downloaders are implemented. After cross-source dedup and quality filtering,
-full Track A measured **7.96M final documents · 830M words · 1.13B v2 subword tokens**
-(2026-10-19 run — see [README.md](README.md)).
+All fourteen shipped downloaders are implemented. After cross-source dedup and quality
+filtering, full Track A measured **7.91M final documents · 827M words · 1.13B v2 subword
+tokens** (release 1.0.0, 2026-10-19 — see [README.md](README.md)).
 
 ### Track B — collected sources (estimates)
 

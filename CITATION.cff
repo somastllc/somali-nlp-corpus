@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this corpus or its pipeline, please cite it as below."
+type: dataset
+title: "Somali NLP Corpus"
+abstract: >-
+  A cleaned, deduplicated Somali text corpus for NLP and language-model research: 7,913,008
+  documents, 826,973,689 words and 1,129,084,663 tokens from 14 public sources, with
+  per-record licenses, and the Rust pipeline that builds it. The corpus has no single
+  license: each record keeps the license of its upstream dataset (see ATTRIBUTION.md in the
+  dataset).
+authors:
+  - name: "SOMAST"
+version: 1.0.0
+date-released: 2026-10-19
+url: "https://huggingface.co/datasets/somast/somali-nlp-corpus"
+repository-code: "https://github.com/somastllc/somali-nlp-corpus"
+keywords:
+  - somali
+  - low-resource languages
+  - natural language processing
+  - text corpus
+  - pretraining
+contact:
+  - name: "SOMAST"
+    email: "info@somast.so"

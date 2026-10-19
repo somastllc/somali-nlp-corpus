@@ -1,14 +1,14 @@
 //! Deep-clean stage binary: LID-verified JSONL -> deep-cleaned CorpusRecord JSONL.
 //! See docs/CLEANING_STRATEGY.md.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::path::PathBuf;
 
 use anyhow::Result;
 use chrono::Utc;
 use clap::Parser;
-use common::reject;
-use common::types::{CorpusRecord, RecordDisposition};
+use common::reject::{self, reject_exact_duplicate};
+use common::types::{ContentHash, CorpusRecord, DocId, RecordDisposition};
 use corpus_pipeline::config::PipelineConfig;
 use corpus_pipeline::deep_clean::deep_clean_record;
 use corpus_pipeline::io::{par_map_jsonl, to_line, write_report, JsonlSink, RejectWriter};
@@ -67,7 +67,12 @@ enum Processed {
     /// Rejected by an earlier stage; copied to the reject sidecar unchanged.
     Passthrough { source: String, line: String },
     Rejected { source: String, reason: String, line: String },
-    Kept { source: String, line: String },
+    Kept {
+        source: String,
+        line: String,
+        hash: ContentHash,
+        id: DocId,
+    },
 }
 
 fn main() -> Result<()> {
@@ -101,6 +106,10 @@ fn main() -> Result<()> {
 
     let progress = RecordProgress::start("Deep-cleaning records", total);
 
+    // Deep clean rewrites text, so records that were distinct before can now be
+    // identical. First seen wins, as in merge and clean.
+    let mut seen: HashMap<ContentHash, DocId> = HashMap::new();
+
     // Deep cleaning and serialization run on the rayon pool; stats and writes stay
     // sequential, in input order.
     let process = |record: CorpusRecord| -> Result<Processed> {
@@ -125,7 +134,12 @@ fn main() -> Result<()> {
             }
             None => {
                 let line = to_line(&outcome.record)?;
-                Ok(Processed::Kept { source, line })
+                Ok(Processed::Kept {
+                    source,
+                    line,
+                    hash: outcome.record.content_hash.clone(),
+                    id: outcome.record.id.clone(),
+                })
             }
         }
     };
@@ -153,8 +167,25 @@ fn main() -> Result<()> {
                 report.rejected_docs += 1;
                 rejects.write_line(&line)?;
             }
-            Processed::Kept { source, line } => {
+            Processed::Kept { source, line, hash, id } => {
                 *report.per_source_input.entry(source.clone()).or_insert(0) += 1;
+                if let Some(canonical) = seen.get(&hash) {
+                    let mut duplicate: CorpusRecord = serde_json::from_str(&line)?;
+                    reject_exact_duplicate(&mut duplicate, canonical.clone());
+                    let reason = "exact_duplicate_after_deep_clean".to_string();
+                    *report.drops_by_reason.entry(reason.clone()).or_insert(0) += 1;
+                    *report
+                        .per_source_drops_by_reason
+                        .entry(source.clone())
+                        .or_default()
+                        .entry(reason)
+                        .or_insert(0) += 1;
+                    *report.per_source_rejected.entry(source).or_insert(0) += 1;
+                    report.rejected_docs += 1;
+                    rejects.write(&duplicate)?;
+                    return Ok(());
+                }
+                seen.insert(hash, id);
                 *report.per_source_kept.entry(source).or_insert(0) += 1;
                 report.output_docs += 1;
                 output.write_line(&line)?;

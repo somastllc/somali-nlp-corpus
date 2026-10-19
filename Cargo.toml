@@ -6,7 +6,7 @@ resolver = "2"
 version = "0.1.0"
 edition = "2021"
 authors = ["Somali NLP Corpus Contributors"]
-repository = "https://github.com/goobolabs/somali-nlp-corpus"
+repository = "https://github.com/somastllc/somali-nlp-corpus"
 
 [workspace.dependencies]
 # Serialization

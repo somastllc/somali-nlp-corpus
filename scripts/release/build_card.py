@@ -195,7 +195,7 @@ def build_card(manifest: dict, stats: dict, repo: str, contact: str) -> str:
         "a second exact dedup), and near-deduplicated (MinHash/LSH, Jaccard 0.80, keeping the longest "
         "copy). Sentence sources (NLLB, OPUS, MT560) use a 5-word floor and exact dedup only. "
         "Rejected records are kept in sidecars in the pipeline repository. The pipeline is Rust, "
-        "configuration-driven, and reproducible: <https://github.com/goobolabs/somali-nlp-corpus>.\n"
+        "configuration-driven, and reproducible: <https://github.com/somastllc/somali-nlp-corpus>.\n"
     )
     lines.append("## Known limitations\n")
     lines.append(

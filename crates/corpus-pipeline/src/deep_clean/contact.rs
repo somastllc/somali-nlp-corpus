@@ -45,14 +45,34 @@ fn digit_count(s: &str) -> usize {
     s.chars().filter(char::is_ascii_digit).count()
 }
 
+/// Numbers written locally after a word that announces a phone number (`tel:0502488985`,
+/// `Utas: 0407353505`). The prefix is not restricted to Somali operators, since these
+/// numbers appear in diaspora ads; the keyword is what makes a bare digit run a phone.
+fn contextual_phone_re() -> &'static Regex {
+    static RE: OnceLock<Regex> = OnceLock::new();
+    RE.get_or_init(|| {
+        Regex::new(
+            r"(?i)\b(?:tel\w*|utas|mob(?:ile)?|phone|call|whats?app|wac|lambar\w*|number)\b[\s.:\-–—]*(0\d{8,10})",
+        )
+        .unwrap()
+    })
+}
+
 /// A candidate counts as a phone number only when it is not part of a longer token:
-/// not preceded by a letter, digit, or one of `+ . -`, and not followed by a digit. A
-/// comma may precede only a `+` number: before `00` or a local prefix it could be a
-/// thousands separator (`1,000`).
+/// not preceded by a letter, digit, or one of `+ . -`, and not followed by a digit.
+/// Exceptions: a `.` after a letter (`Tel.0634426761`) and a `-` or `.` before a `+`
+/// number (`Tell:-+6125324626`) are separators. A comma preceded by a digit may be a
+/// thousands separator (`1,000`), so it blocks `00` and local candidates only.
 fn has_phone_boundaries(text: &str, start: usize, end: usize, plus_prefixed: bool) -> bool {
-    let before_ok = text[..start].chars().next_back().is_none_or(|c| {
-        !(c.is_alphanumeric() || matches!(c, '+' | '.' | '-') || (c == ',' && !plus_prefixed))
-    });
+    let mut before = text[..start].chars().rev();
+    let before_ok = match before.next() {
+        None => true,
+        Some(c) if c.is_alphanumeric() || c == '+' => false,
+        Some('.') => plus_prefixed || before.next().is_some_and(char::is_alphabetic),
+        Some('-') => plus_prefixed,
+        Some(',') => plus_prefixed || !before.next().is_some_and(|p| p.is_ascii_digit()),
+        Some(_) => true,
+    };
     let after_ok = text[end..].chars().next().is_none_or(|c| !c.is_ascii_digit());
     before_ok && after_ok
 }
@@ -74,9 +94,29 @@ fn mask_phones_with(text: &str, re: &Regex, international: bool) -> String {
     out
 }
 
+fn mask_contextual_phones(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut last = 0;
+    for caps in contextual_phone_re().captures_iter(text) {
+        let number = caps.get(1).expect("group 1 is not optional");
+        if text[number.end()..]
+            .chars()
+            .next()
+            .is_none_or(|c| !c.is_ascii_digit())
+        {
+            out.push_str(&text[last..number.start()]);
+            out.push_str(PHONE_SENTINEL);
+            last = number.end();
+        }
+    }
+    out.push_str(&text[last..]);
+    out
+}
+
 pub fn mask_phone_numbers(text: &str) -> String {
     let once = mask_phones_with(text, international_phone_re(), true);
-    mask_phones_with(&once, somali_local_phone_re(), false)
+    let local = mask_phones_with(&once, somali_local_phone_re(), false);
+    mask_contextual_phones(&local)
 }
 
 pub fn mask_contacts(text: &str, mask_urls: bool, mask_emails: bool, mask_phones: bool) -> String {
@@ -99,7 +139,12 @@ mod tests {
 
     #[test]
     fn masks_url_and_email() {
-        let out = mask_contacts("visit https://example.com or mail a@b.com", true, true, false);
+        let out = mask_contacts(
+            "visit https://example.com or mail a@b.com",
+            true,
+            true,
+            false,
+        );
         assert!(out.contains(URL_SENTINEL));
         assert!(out.contains(EMAIL_SENTINEL));
     }
@@ -131,11 +176,47 @@ mod tests {
     fn international_number_after_a_comma_is_masked() {
         let out = mask_phone_numbers("Shirka waa, +46-735804527 Waa bilaahi");
         assert_eq!(out, "Shirka waa, ⟨phone⟩ Waa bilaahi");
-        assert_eq!(mask_phone_numbers("qiimo 1,000 5000 1000 123"), "qiimo 1,000 5000 1000 123");
+        assert_eq!(
+            mask_phone_numbers("qiimo 1,000 5000 1000 123"),
+            "qiimo 1,000 5000 1000 123"
+        );
     }
 
     #[test]
     fn number_inside_a_longer_digit_run_is_not_masked() {
         assert_eq!(mask_phone_numbers("id 99061219223599"), "id 99061219223599");
+    }
+
+    #[test]
+    fn masks_numbers_with_separators_and_phone_keywords() {
+        for (text, expected) in [
+            ("Tel.Tel.0634426761 iyo", "Tel.Tel.⟨phone⟩ iyo"),
+            ("Tell:-+6125324626 iyo", "Tell:-⟨phone⟩ iyo"),
+            ("Tell:⟨phone⟩,0615771050.", "Tell:⟨phone⟩,⟨phone⟩."),
+            ("UAE, tel:0502488985— waa", "UAE, tel:⟨phone⟩— waa"),
+            (
+                "Telefonkan–:07939213271 Wakhtigana",
+                "Telefonkan–:⟨phone⟩ Wakhtigana",
+            ),
+            (
+                "bga. Utas: 0407353505 Canberrad",
+                "bga. Utas: ⟨phone⟩ Canberrad",
+            ),
+        ] {
+            assert_eq!(mask_phone_numbers(text), expected);
+        }
+    }
+
+    #[test]
+    fn bare_digit_runs_without_a_phone_context_stay() {
+        for text in [
+            "Wa-l-arqaam 0123456789. Tuktabu",
+            "ISBN 978-0195125580.",
+            "version 1.0634426761 waa",
+            "tel 05024889851234",
+            "lambar 0123 4",
+        ] {
+            assert_eq!(mask_phone_numbers(text), text);
+        }
     }
 }

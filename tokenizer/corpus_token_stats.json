@@ -1,7 +1,7 @@
 {
-  "corpus": "/home/sharafdin/Documents/Goobo-Labs/SomNLP-Corpus/data/final/final_so.jsonl",
+  "corpus": "/home/sharafdin/Documents/somastllc/somali-nlp-corpus/data/final/final_so.jsonl",
   "corpus_fingerprint": {
-    "path": "/home/sharafdin/Documents/Goobo-Labs/SomNLP-Corpus/data/final/final_so.jsonl",
+    "path": "/home/sharafdin/Documents/somastllc/somali-nlp-corpus/data/final/final_so.jsonl",
     "size_bytes": 9070052487,
     "mtime_ns": 1792434410919856817,
     "edge_sha256": "30858aa20fab193299a358a22c6f7934f84b36b3d84710eb472569b9da9953f2"

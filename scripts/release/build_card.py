@@ -258,7 +258,7 @@ def build_card(manifest: dict, stats: dict, repo: str, contact: str, version: st
     lines.append("## Citation\n")
     lines.append(
         "```bibtex\n@misc{somali_nlp_corpus,\n  title  = {Somali NLP Corpus: a cleaned Somali text corpus},\n"
-        "  author = {SOMAST},\n  year   = {2026},\n"
+        "  author = {Somast},\n  year   = {2026},\n"
         f"  url    = {{https://huggingface.co/datasets/{repo}}}\n}}\n```\n"
     )
     return "\n".join(lines)

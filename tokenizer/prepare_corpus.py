@@ -36,6 +36,7 @@ from common import (
     fail,
     is_eval_doc,
     iter_jsonl_docs,
+    path_for_stats,
     resolve_under_repo,
     setup_logging,
     write_json,
@@ -207,10 +208,10 @@ def main() -> None:
         write_json(
             stats_path,
             {
-                "input": str(input_path),
-                "train_output": str(output_path),
-                "eval_output": str(eval_path),
-                "corpus_fingerprint": corpus_fingerprint(input_path),
+                "input": path_for_stats(input_path, args.repo_root),
+                "train_output": path_for_stats(output_path, args.repo_root),
+                "eval_output": path_for_stats(eval_path, args.repo_root),
+                "corpus_fingerprint": corpus_fingerprint(input_path, repo_root=args.repo_root),
                 "eval_split": {
                     "modulus": EVAL_SPLIT_MODULUS,
                     "buckets": EVAL_SPLIT_BUCKETS,

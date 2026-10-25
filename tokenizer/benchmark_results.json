@@ -1,5 +1,5 @@
 {
-  "eval_split": "/home/sharafdin/Documents/Goobo-Labs/SomNLP-Corpus/tokenizer/eval_holdout.jsonl",
+  "eval_split": "tokenizer/eval_holdout.jsonl",
   "documents_scored": 63542,
   "roundtrip_limit": 100000,
   "tokenizers": {

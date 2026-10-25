@@ -9,7 +9,7 @@ abstract: >-
   license: each record keeps the license of its upstream dataset (see ATTRIBUTION.md in the
   dataset).
 authors:
-  - name: "SOMAST"
+  - name: "Somast"
 version: 1.0.0
 date-released: 2026-10-19
 url: "https://huggingface.co/datasets/somast/somali-nlp-corpus"
@@ -21,5 +21,5 @@ keywords:
   - text corpus
   - pretraining
 contact:
-  - name: "SOMAST"
+  - name: "Somast"
     email: "info@somast.so"

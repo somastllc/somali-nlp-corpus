@@ -29,6 +29,7 @@ from common import (
     add_repo_path_arg,
     count_words,
     fail,
+    path_for_stats,
     resolve_under_repo,
     setup_logging,
     write_json,
@@ -282,7 +283,7 @@ def main() -> None:
     logging.info("Scored %d documents in %.1fs", seen, time.perf_counter() - started)
 
     results = {
-        "eval_split": str(eval_path),
+        "eval_split": path_for_stats(eval_path, args.repo_root),
         "documents_scored": seen,
         "roundtrip_limit": args.roundtrip_limit,
         "tokenizers": {label: accumulators[label].summary() for label, _ in tokenizers},

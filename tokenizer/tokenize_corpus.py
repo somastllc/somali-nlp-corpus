@@ -33,6 +33,7 @@ from common import (
     clean_document,
     corpus_fingerprint,
     count_words,
+    path_for_stats,
     fail,
     resolve_under_repo,
     setup_logging,
@@ -344,8 +345,8 @@ def main() -> None:
     elapsed = time.time() - started
 
     payload = {
-        "corpus": str(corpus),
-        "corpus_fingerprint": corpus_fingerprint(corpus),
+        "corpus": path_for_stats(corpus, args.repo_root),
+        "corpus_fingerprint": corpus_fingerprint(corpus, repo_root=args.repo_root),
         "elapsed_seconds": round(elapsed, 1),
         "jobs": args.jobs,
         "roundtrip_stride": None if args.no_roundtrip else ROUNDTRIP_STRIDE,

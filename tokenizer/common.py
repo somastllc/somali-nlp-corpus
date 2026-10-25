@@ -83,6 +83,16 @@ def resolve_under_repo(repo_root: Path, path: Path) -> Path:
     return path if path.is_absolute() else (repo_root / path).resolve()
 
 
+def path_for_stats(path: Path, repo_root: Path | None = None) -> str:
+    """Path string for JSON stats: relative to the repo root when possible."""
+    resolved = path.resolve()
+    root = (repo_root or REPO_ROOT).resolve()
+    try:
+        return resolved.relative_to(root).as_posix()
+    except ValueError:
+        return str(resolved)
+
+
 def count_words(text: str) -> int:
     return len(text.split())
 
@@ -102,7 +112,7 @@ def is_eval_doc(doc_id: str) -> bool:
     return int.from_bytes(digest, "big") % EVAL_SPLIT_MODULUS < EVAL_SPLIT_BUCKETS
 
 
-def corpus_fingerprint(path: Path) -> dict[str, Any]:
+def corpus_fingerprint(path: Path, *, repo_root: Path | None = None) -> dict[str, Any]:
     """Cheap identity for a large corpus file: size, mtime, and hashed edges.
 
     Reading both ends rather than the whole 6 GB file keeps this near-instant while
@@ -116,7 +126,7 @@ def corpus_fingerprint(path: Path) -> dict[str, Any]:
             handle.seek(max(0, stat.st_size - _FINGERPRINT_EDGE_BYTES))
             digest.update(handle.read(_FINGERPRINT_EDGE_BYTES))
     return {
-        "path": str(path),
+        "path": path_for_stats(path, repo_root),
         "size_bytes": stat.st_size,
         "mtime_ns": stat.st_mtime_ns,
         "edge_sha256": digest.hexdigest(),
